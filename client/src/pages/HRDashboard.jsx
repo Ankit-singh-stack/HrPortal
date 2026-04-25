@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import axios from 'axios';
+import axios from '../services/api';
 import { 
   Users, 
   Calendar, 
@@ -17,7 +17,9 @@ import {
   DollarSign,
   Menu,
   X,
-  Bell
+  Bell,
+  Sun,
+  Moon
 } from 'lucide-react';
 import EmployeesList from '../components/hr/EmployeesList';
 import AttendanceManagement from '../components/hr/AttendanceManagement';

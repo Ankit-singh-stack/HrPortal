@@ -549,25 +549,10 @@ app.get('/api/salary/stats', authMiddleware, hrMiddleware, (req, res) => {
 // ========== CREATE DEFAULT HR ON STARTUP ==========
 await createDefaultHR();
 
-// ========== SERVE FRONTEND ==========
-const distPath = path.join(__dirname, '../client/dist');
-
-if (fs.existsSync(distPath)) {
-  // Serve static files from dist
-  app.use(express.static(distPath));
-  
-  // For any request that doesn't start with /api, send index.html
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) {
-      return next();
-    }
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-  console.log('✅ Serving frontend from:', distPath);
-} else {
-  console.log('⚠️ Frontend build not found. Run "cd client && npm run build" first');
-  console.log('📍 Only API endpoints available at http://localhost:5000/api/health');
-}
+// ========== ROOT ENDPOINT ==========
+app.get('/', (req, res) => {
+  res.send('HR Portal Backend API is running');
+});
 
 // ========== ERROR HANDLING MIDDLEWARE ==========
 app.use((err, req, res, next) => {
