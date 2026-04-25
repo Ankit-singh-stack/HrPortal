@@ -14,6 +14,7 @@ const Login = () => {
     setLoading(true);
     try {
       const user = await login(email, password);
+
       if (user.role === 'hr') {
         navigate('/hr');
       } else {
@@ -21,6 +22,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login failed:', error);
+      alert(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -33,7 +35,7 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-gray-800">HR Management Portal</h1>
           <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -41,6 +43,8 @@ const Login = () => {
             </label>
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -48,13 +52,15 @@ const Login = () => {
               placeholder="Enter your email"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
             <input
               type="password"
+              name="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -62,7 +68,7 @@ const Login = () => {
               placeholder="Enter your password"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -71,7 +77,7 @@ const Login = () => {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-        
+
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Don't have an account?{' '}

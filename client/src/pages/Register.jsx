@@ -10,6 +10,7 @@ const Register = () => {
     confirmPassword: '',
     role: 'employee'
   });
+
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -20,21 +21,20 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
+      return alert('Passwords do not match');
     }
-    
+
     if (formData.password.length < 6) {
-      alert('Password must be at least 6 characters');
-      return;
+      return alert('Password must be at least 6 characters');
     }
-    
+
     setLoading(true);
     try {
       const { confirmPassword, ...registerData } = formData;
       const user = await register(registerData);
+
       if (user.role === 'hr') {
         navigate('/hr');
       } else {
@@ -42,6 +42,7 @@ const Register = () => {
       }
     } catch (error) {
       console.error('Registration failed:', error);
+      alert(error.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,7 @@ const Register = () => {
           <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
           <p className="text-gray-600 mt-2">Join our HR Management Portal</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -63,6 +64,7 @@ const Register = () => {
             <input
               type="text"
               name="name"
+              autoComplete="name"
               value={formData.name}
               onChange={handleChange}
               required
@@ -70,7 +72,7 @@ const Register = () => {
               placeholder="Enter your full name"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
@@ -78,6 +80,7 @@ const Register = () => {
             <input
               type="email"
               name="email"
+              autoComplete="email"
               value={formData.email}
               onChange={handleChange}
               required
@@ -85,7 +88,7 @@ const Register = () => {
               placeholder="Enter your email"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Password
@@ -93,6 +96,7 @@ const Register = () => {
             <input
               type="password"
               name="password"
+              autoComplete="new-password"
               value={formData.password}
               onChange={handleChange}
               required
@@ -100,7 +104,7 @@ const Register = () => {
               placeholder="Create a password"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Confirm Password
@@ -108,6 +112,7 @@ const Register = () => {
             <input
               type="password"
               name="confirmPassword"
+              autoComplete="new-password"
               value={formData.confirmPassword}
               onChange={handleChange}
               required
@@ -115,7 +120,7 @@ const Register = () => {
               placeholder="Confirm your password"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Role
@@ -130,7 +135,7 @@ const Register = () => {
               <option value="hr">HR Manager</option>
             </select>
           </div>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -139,7 +144,7 @@ const Register = () => {
             {loading ? 'Creating Account...' : 'Register'}
           </button>
         </form>
-        
+
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Already have an account?{' '}
