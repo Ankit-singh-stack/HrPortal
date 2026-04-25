@@ -255,6 +255,5 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
     </div>
   );
 };
-};
 
 export default EmployeeDashboard;
