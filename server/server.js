@@ -3,12 +3,27 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// ✅ Fix for __dirname (ESM)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ CORS (important for deployment)
+app.use(cors({
+  origin: "*", // you can restrict later
+  credentials: true
+}));
+
 app.use(express.json());
+
+/* ================= YOUR EXISTING CODE (UNCHANGED) ================= */
+// 👉 I am not touching your routes logic — it's already correct
 
 // In-memory database
 const users = [];
@@ -900,25 +915,28 @@ app.get('/api/salary/stats', authMiddleware, hrMiddleware, (req, res) => {
 // ========== CREATE DEFAULT HR ON STARTUP ==========
 createDefaultHR();
 
+/* ================= 🔥 IMPORTANT PART STARTS HERE ================= */
+
+// ✅ Serve frontend build (VERY IMPORTANT for production)
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// ✅ Handle React routing - All non-API routes go to index.html
+app.get('*', (req, res) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ message: 'API endpoint not found' });
+  }
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
+/* ================= 🔥 IMPORTANT PART ENDS HERE ================= */
+
 // ========== START SERVER ==========
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Server is running!`);
-  console.log(`📍 http://localhost:${PORT}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`\n📊 Available endpoints:`);
-  console.log(`   POST   /api/auth/register`);
-  console.log(`   POST   /api/auth/login`);
-  console.log(`   POST   /api/auth/create-hr`);
-  console.log(`   GET    /api/users`);
-  console.log(`   POST   /api/attendance`);
-  console.log(`   GET    /api/attendance`);
-  console.log(`   POST   /api/leaves`);
-  console.log(`   GET    /api/leaves`);
-  console.log(`   GET    /api/activities`);
-  console.log(`   POST   /api/salary          (HR only)`);
-  console.log(`   GET    /api/salary/all      (HR only)`);
-  console.log(`   GET    /api/salary/my-salary (Employee)`);
-  console.log(`   PUT    /api/salary/:id/pay  (HR only)`);
-  console.log(`\n✅ Default HR Login: hr@admin.com / 123456\n`);
+  console.log(`📍 API: http://localhost:${PORT}/api/health`);
+  console.log(`📍 Frontend: http://localhost:${PORT}`);
+  console.log(`📍 Default HR Login: hr@admin.com / 123456\n`);
 });
