@@ -51,7 +51,8 @@ const AttendanceManagement = () => {
 
   const handleMarkAttendance = async (userId, status) => {
     try {
-      await axios.post(`/api/attendance`, {
+      // FIXED: removed /api prefix
+      await axios.post('/attendance', {
         userId,
         status,
         checkInTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -152,7 +153,7 @@ const AttendanceManagement = () => {
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 mt-2">Loading...</p>
                    </td>
-                 </tr>
+                  </tr>
               ) : attendance.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="text-center py-8 text-gray-500 dark:text-gray-400">

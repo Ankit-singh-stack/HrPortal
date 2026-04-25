@@ -27,7 +27,8 @@ const LeaveRequests = () => {
 
   const handleUpdateStatus = async (id, status) => {
     try {
-      await axios.put(`/api/leaves/${id}`, { status });
+      // FIXED: removed /api prefix
+      await axios.put(`/leaves/${id}`, { status });
       toast.success(`Leave request ${status}`);
       fetchLeaves();
     } catch (error) {
