@@ -3,6 +3,12 @@ import axios from 'axios';
 // Use environment variable for API URL
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+// Debug: Log the API URL being used
+if (typeof window !== 'undefined') {
+  console.log('🔗 API Base URL:', API_URL);
+  console.log('🌍 Environment:', import.meta.env.MODE);
+}
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {
