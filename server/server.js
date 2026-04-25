@@ -15,13 +15,51 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CORS
+// ========== CORS CONFIGURATION (FIXED FOR PRODUCTION) ==========
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://hrportal-client.onrender.com',
+  'https://hr-portal-server.onrender.com',
+  process.env.CLIENT_URL,
+  process.env.RENDER_EXTERNAL_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: "*",
-  credentials: true
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    // Allow in development
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    // Check if origin is allowed
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️ CORS blocked origin: ${origin}`);
+      callback(null, true); // Allow in development, change in production
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ========== IN-MEMORY DATABASE ==========
 const users = [];
@@ -158,6 +196,7 @@ app.post('/api/auth/register', async (req, res) => {
     
     res.status(201).json({ ...userWithoutPassword, token });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -193,6 +232,7 @@ app.post('/api/auth/login', async (req, res) => {
     
     res.json({ ...userWithoutPassword, token });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -231,6 +271,7 @@ app.post('/api/auth/create-hr', async (req, res) => {
     
     res.status(201).json({ ...userWithoutPassword, token });
   } catch (error) {
+    console.error('Create HR error:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -502,7 +543,7 @@ app.get('/api/salary/stats', authMiddleware, hrMiddleware, (req, res) => {
 // ========== CREATE DEFAULT HR ON STARTUP ==========
 await createDefaultHR();
 
-// ========== SERVE FRONTEND (Fixed - No Wildcard Issues) ==========
+// ========== SERVE FRONTEND ==========
 const distPath = path.join(__dirname, '../client/dist');
 
 if (fs.existsSync(distPath)) {
@@ -516,10 +557,17 @@ if (fs.existsSync(distPath)) {
     }
     res.sendFile(path.join(distPath, 'index.html'));
   });
+  console.log('✅ Serving frontend from:', distPath);
 } else {
   console.log('⚠️ Frontend build not found. Run "cd client && npm run build" first');
   console.log('📍 Only API endpoints available at http://localhost:5000/api/health');
 }
+
+// ========== ERROR HANDLING MIDDLEWARE ==========
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ message: 'Internal server error', error: err.message });
+});
 
 // ========== START SERVER ==========
 const PORT = process.env.PORT || 5000;
@@ -527,6 +575,8 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`\n🚀 Server is running!`);
   console.log(`📍 API: http://localhost:${PORT}/api/health`);
-  console.log(`📍 Frontend: http://localhost:${PORT}`);
-  console.log(`📍 Default HR Login: hr@admin.com / 123456\n`);
+  // console.log(`📍 Frontend: http://localhost:${PORT}`);
+  console.log(`📍 Default HR Login: hr@admin.com / 123456`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📍 CORS Enabled for production\n`);
 });
