@@ -61,6 +61,12 @@ app.options('*', cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ========== REQUEST LOGGING MIDDLEWARE (FOR DEBUGGING) ==========
+app.use((req, res, next) => {
+  console.log(`📍 ${req.method} ${req.path}`);
+  next();
+});
+
 // ========== IN-MEMORY DATABASE ==========
 const users = [];
 const attendance = [];
