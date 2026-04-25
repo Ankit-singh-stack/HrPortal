@@ -57,8 +57,8 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
   const fetchStats = async () => {
     try {
       const [attendanceRes, leavesRes] = await Promise.all([
-        axios.get('/api/attendance'),
-        axios.get('/api/leaves', { params: { userId: user?._id } })
+        axios.get('/attendance'),
+        axios.get('/leaves', { params: { userId: user?._id } })
       ]);
       
       const attendanceData = Array.isArray(attendanceRes.data) 

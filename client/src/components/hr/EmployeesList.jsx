@@ -27,7 +27,7 @@ const EmployeesList = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('/api/users');
+      const response = await axios.get('/users');
       setEmployees(response.data);
     } catch (error) {
       toast.error('Failed to fetch employees');
@@ -41,7 +41,7 @@ const EmployeesList = () => {
         await axios.put(`/api/users/${editingEmployee._id}`, formData);
         toast.success('Employee updated successfully');
       } else {
-        await axios.post('/api/auth/register', formData);
+        await axios.post('/auth/register', formData);
         toast.success('Employee added successfully');
       }
       fetchEmployees();

@@ -18,7 +18,7 @@ const ActivityLogs = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('/api/users');
+      const response = await axios.get('/users');
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -32,7 +32,7 @@ const ActivityLogs = () => {
       if (filter.action) params.action = filter.action;
       if (filter.userId) params.userId = filter.userId;
       
-      const response = await axios.get('/api/activities', { params });
+      const response = await axios.get('/activities', { params });
       setLogs(response.data.logs || []);
       setTotalPages(response.data.pages || 1);
     } catch (error) {

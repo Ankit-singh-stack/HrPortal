@@ -19,7 +19,7 @@ const Analytics = () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 30);
       
-      const attendanceRes = await axios.get('/api/attendance', {
+      const attendanceRes = await axios.get('/attendance', {
         params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() }
       });
       
@@ -34,7 +34,7 @@ const Analytics = () => {
       
       setAttendanceData(Object.values(dailyStats).slice(-7));
       
-      const leaveRes = await axios.get('/api/leaves');
+      const leaveRes = await axios.get('/leaves');
       const leaveTypes = {};
       leaveRes.data.leaves?.forEach(leave => {
         leaveTypes[leave.type] = (leaveTypes[leave.type] || 0) + 1;
@@ -42,7 +42,7 @@ const Analytics = () => {
       
       setLeaveData(Object.entries(leaveTypes).map(([name, value]) => ({ name, value })));
       
-      const usersRes = await axios.get('/api/users');
+      const usersRes = await axios.get('/users');
       const deptStats = {};
       usersRes.data.forEach(user => {
         const dept = user.profile?.department || 'Unassigned';

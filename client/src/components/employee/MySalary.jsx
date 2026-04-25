@@ -16,7 +16,7 @@ const MySalary = () => {
   const fetchMySalaries = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/salary/my-salary', {
+      const response = await axios.get('/salary/my-salary', {
         params: { year: selectedYear }
       });
       setSalaries(response.data);

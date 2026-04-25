@@ -16,7 +16,7 @@ const LeaveRequests = () => {
     setLoading(true);
     try {
       const params = filter !== 'all' ? { status: filter } : {};
-      const response = await axios.get('/api/leaves', { params });
+      const response = await axios.get('/leaves', { params });
       setLeaves(response.data.leaves || []);
     } catch (error) {
       toast.error('Failed to fetch leave requests');

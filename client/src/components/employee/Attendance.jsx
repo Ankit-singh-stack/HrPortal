@@ -26,7 +26,7 @@ const Attendance = () => {
   const fetchAttendanceHistory = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/attendance', {
+      const response = await axios.get('/attendance', {
         params: {
           startDate: new Date(selectedYear, selectedMonth, 1).toISOString(),
           endDate: new Date(selectedYear, selectedMonth + 1, 0).toISOString()
@@ -46,7 +46,7 @@ const Attendance = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/attendance/stats', {
+      const response = await axios.get('/attendance/stats', {
         params: { month: selectedMonth, year: selectedYear }
       });
       setStats(response.data);
@@ -58,7 +58,7 @@ const Attendance = () => {
   const checkTodayAttendance = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const response = await axios.get('/api/attendance', {
+      const response = await axios.get('/attendance', {
         params: { startDate: today, endDate: today }
       });
       const attendanceData = Array.isArray(response.data) 
@@ -79,7 +79,7 @@ const Attendance = () => {
     const currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
     try {
-      await axios.post('/api/attendance', {
+      await axios.post('/attendance', {
         status: 'present',
         checkInTime: currentTime
       });
@@ -96,7 +96,7 @@ const Attendance = () => {
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
     try {
-      await axios.post('/api/attendance', {
+      await axios.post('/attendance', {
         checkOutTime: currentTime
       });
       toast.success('Checked out successfully! 👋');

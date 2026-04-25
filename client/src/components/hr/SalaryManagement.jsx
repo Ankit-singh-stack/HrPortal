@@ -71,7 +71,7 @@ const SalaryManagement = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('/api/users');
+      const response = await axios.get('/users');
       setEmployees(response.data);
     } catch (error) {
       toast.error('Failed to fetch employees');
@@ -81,7 +81,7 @@ const SalaryManagement = () => {
   const fetchSalaries = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/salary/all', {
+      const response = await axios.get('/salary/all', {
         params: { month: selectedMonth, year: selectedYear }
       });
       setSalaries(response.data.salaries || []);
@@ -94,7 +94,7 @@ const SalaryManagement = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/salary/stats', {
+      const response = await axios.get('/salary/stats', {
         params: { year: selectedYear }
       });
       setStats(response.data);
@@ -125,7 +125,7 @@ const SalaryManagement = () => {
         await axios.put(`/api/salary/${editingSalary._id}`, salaryData);
         toast.success('Salary updated successfully');
       } else {
-        await axios.post('/api/salary', salaryData);
+        await axios.post('/salary', salaryData);
         toast.success('Salary processed successfully');
       }
       

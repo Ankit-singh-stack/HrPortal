@@ -26,7 +26,7 @@ const LeaveApplication = () => {
 
   const fetchLeaveHistory = async () => {
     try {
-      const response = await axios.get('/api/leaves');
+      const response = await axios.get('/leaves');
       setLeaveHistory(response.data.leaves || []);
     } catch (error) {
       console.error('Error fetching leaves:', error);
@@ -35,7 +35,7 @@ const LeaveApplication = () => {
 
   const fetchLeaveStats = async () => {
     try {
-      const response = await axios.get('/api/leaves/stats');
+      const response = await axios.get('/leaves/stats');
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -60,7 +60,7 @@ const LeaveApplication = () => {
     
     setLoading(true);
     try {
-      await axios.post('/api/leaves', formData);
+      await axios.post('/leaves', formData);
       toast.success('Leave application submitted successfully! 📝');
       setFormData({
         type: 'casual',

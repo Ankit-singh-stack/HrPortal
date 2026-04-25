@@ -17,7 +17,7 @@ const AttendanceManagement = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('/api/users');
+      const response = await axios.get('/users');
       setEmployees(response.data);
     } catch (error) {
       console.error('Error fetching employees:', error);
@@ -35,7 +35,7 @@ const AttendanceManagement = () => {
         params.endDate = selectedDate;
       }
       
-      const response = await axios.get('/api/attendance', { params });
+      const response = await axios.get('/attendance', { params });
       const attendanceData = Array.isArray(response.data) 
         ? response.data 
         : response.data.attendance || [];

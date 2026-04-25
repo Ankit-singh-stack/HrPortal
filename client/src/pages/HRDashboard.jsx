@@ -64,9 +64,9 @@ const HRDashboard = ({ darkMode, setDarkMode }) => {
   const fetchStats = async () => {
     try {
       const [employeesRes, attendanceRes, leavesRes] = await Promise.all([
-        axios.get('/api/users'),
-        axios.get('/api/attendance'),
-        axios.get('/api/leaves')
+        axios.get('/users'),
+        axios.get('/attendance'),
+        axios.get('/leaves')
       ]);
       
       const today = new Date().toISOString().split('T')[0];
