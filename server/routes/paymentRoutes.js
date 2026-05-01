@@ -6,15 +6,15 @@ import {
   getPaymentHistory, 
   getPaymentDetails 
 } from '../controllers/paymentController.js';
-import { auth } from '../middleware/auth.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Payment routes
-router.post('/create-order', auth, createPaymentOrder);
-router.post('/verify', auth, verifyPayment);
-router.post('/failure', auth, handlePaymentFailure);
-router.get('/history', auth, getPaymentHistory);
-router.get('/:paymentId', auth, getPaymentDetails);
+router.post('/create-order', protect, createPaymentOrder);
+router.post('/verify', protect, verifyPayment);
+router.post('/failure', protect, handlePaymentFailure);
+router.get('/history', protect, getPaymentHistory);
+router.get('/:paymentId', protect, getPaymentDetails);
 
 export default router;

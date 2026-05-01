@@ -23,7 +23,7 @@ import activityRoutes from './routes/activityRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 
 // Import middleware
-import { auth } from './middleware/auth.js';
+import { protect } from './middleware/auth.js';
 
 dotenv.config();
 
