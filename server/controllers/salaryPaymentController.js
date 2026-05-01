@@ -114,8 +114,8 @@ export const confirmSalaryPayment = async (req, res) => {
       return res.status(404).json({ message: 'Salary record not found' });
     }
 
-    // Verify employee owns this salary
-    if (salary.userId.toString() !== employeeId.toString()) {
+    // Verify user is authorized (HR or the Employee themselves)
+    if (req.user.role !== 'hr' && salary.userId.toString() !== employeeId.toString()) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
 

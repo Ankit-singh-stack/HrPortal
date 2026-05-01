@@ -122,7 +122,7 @@ const SalaryManagement = () => {
       };
       
       if (editingSalary) {
-        await axios.put(`/api/salary/${editingSalary._id}`, salaryData);
+        await axios.put(`/salary/${editingSalary._id}`, salaryData);
         toast.success('Salary updated successfully');
       } else {
         await axios.post('/salary', salaryData);
@@ -328,7 +328,7 @@ const SalaryManagement = () => {
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
                 className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600 focus:ring-2 focus:ring-blue-500"
               >
-                {[2023, 2024, 2025].map(year => (
+                {[2023, 2024, 2025, 2026].map(year => (
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>
