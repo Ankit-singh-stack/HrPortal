@@ -13,8 +13,7 @@ export const uploadToCloudinary = async (file) => {
   try {
     const result = await cloudinary.uploader.upload(file.path, {
       folder: 'hr-portal',
-      resource_type: 'auto',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+      resource_type: 'auto'
     });
     return {
       url: result.secure_url,

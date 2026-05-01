@@ -23,6 +23,7 @@ import Profile from '../components/employee/Profile';
 import Attendance from '../components/employee/Attendance';
 import LeaveApplication from '../components/employee/LeaveApplication';
 import MySalary from '../components/employee/MySalary';
+import DocumentUpload from '../components/employee/DocumentUpload';
 
 const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
   const { user, logout } = useAuth();
@@ -90,6 +91,7 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
     { path: '/employee/attendance', icon: Calendar, label: 'Attendance', color: 'text-purple-600' },
     { path: '/employee/leaves', icon: FileText, label: 'Leave Application', color: 'text-yellow-600' },
     { path: '/employee/salary', icon: DollarSign, label: 'My Salary', color: 'text-pink-600' },
+    { path: '/employee/documents', icon: FileText, label: 'My Documents', color: 'text-indigo-600' },
   ];
 
   return (
@@ -258,6 +260,7 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/leaves" element={<LeaveApplication />} />
             <Route path="/salary" element={<MySalary />} />
+            <Route path="/documents" element={<DocumentUpload />} />
           </Routes>
         </div>
       </div>

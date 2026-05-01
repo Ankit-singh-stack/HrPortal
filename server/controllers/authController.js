@@ -194,3 +194,64 @@ export const logout = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Firebase Google Login/Register
+export const firebaseGoogleLogin = async (req, res) => {
+  try {
+    const { email, name, googleId, photoURL } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create user if not exists
+      user = await User.create({
+        name: name || email.split('@')[0],
+        email,
+        authProvider: 'google',
+        googleId,
+        role: 'employee',
+        profile: {
+          profilePicture: photoURL
+        }
+      });
+
+      await ActivityLog.create({
+        userId: user._id,
+        action: 'USER_REGISTERED',
+        details: { email: user.email, role: user.role, provider: 'firebase-google' }
+      });
+    } else {
+      // Update googleId and photo if needed
+      if (!user.googleId && googleId) user.googleId = googleId;
+      if (!user.profile.profilePicture && photoURL) user.profile.profilePicture = photoURL;
+      await user.save();
+      
+      await ActivityLog.create({
+        userId: user._id,
+        action: 'USER_LOGIN',
+        details: { email: user.email, provider: 'firebase-google' }
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: 'Account is deactivated' });
+    }
+
+    const token = generateToken(user._id);
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      profile: user.profile,
+      token
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

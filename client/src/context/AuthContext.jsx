@@ -49,6 +49,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const firebaseGoogleLogin = async (googleUser) => {
+    try {
+      const response = await api.post('/auth/firebase-google', {
+        email: googleUser.email,
+        name: googleUser.displayName,
+        googleId: googleUser.uid,
+        photoURL: googleUser.photoURL
+      });
+      const { token, ...userData } = response.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      toast.success('Google login successful!');
+      return userData;
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Google login failed');
+      throw error;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -63,7 +83,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, firebaseGoogleLogin }}>
       {children}
     </AuthContext.Provider>
   );

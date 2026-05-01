@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { register, login, googleAuthCallback, getGoogleAuthStatus, updateUserProfile, logout } from '../controllers/authController.js';
+import { register, login, googleAuthCallback, getGoogleAuthStatus, updateUserProfile, logout, firebaseGoogleLogin } from '../controllers/authController.js';
 import { upload } from '../config/multer.js';
 import { auth } from '../middleware/auth.js';
 
@@ -10,6 +10,9 @@ const router = express.Router();
 router.post('/register', register);
 router.post('/login', login);
 router.post('/logout', auth, logout);
+
+// Firebase Google Auth
+router.post('/firebase-google', firebaseGoogleLogin);
 
 // Google OAuth routes
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

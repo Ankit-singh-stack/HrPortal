@@ -27,6 +27,7 @@ import LeaveRequests from '../components/hr/LeaveRequests';
 import ActivityLogs from '../components/hr/ActivityLogs';
 import Analytics from '../components/hr/Analytics';
 import SalaryManagement from '../components/hr/SalaryManagement';
+import DocumentApproval from '../components/hr/DocumentApproval';
 import toast from 'react-hot-toast';
 
 const HRDashboard = ({ darkMode, setDarkMode }) => {
@@ -106,6 +107,7 @@ const HRDashboard = ({ darkMode, setDarkMode }) => {
     { path: '/hr/leaves', icon: FileText, label: 'Leave Requests' },
     { path: '/hr/salary', icon: DollarSign, label: 'Salary Management' },
     { path: '/hr/activities', icon: Activity, label: 'Activity Logs' },
+    { path: '/hr/documents', icon: FileText, label: 'Document Approvals' },
   ];
 
   return (
@@ -281,6 +283,7 @@ const HRDashboard = ({ darkMode, setDarkMode }) => {
             <Route path="/leaves" element={<LeaveRequests />} />
             <Route path="/activities" element={<ActivityLogs />} />
             <Route path="/salary" element={<SalaryManagement />} />
+            <Route path="/documents" element={<DocumentApproval />} />
           </Routes>
         </div>
       </div>

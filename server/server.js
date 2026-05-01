@@ -20,6 +20,7 @@ import leaveRoutes from './routes/leaveRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import salaryRoutes from './routes/salaryRoutes.js';
 import activityRoutes from './routes/activityRoutes.js';
+import documentRoutes from './routes/documentRoutes.js';
 
 // Import middleware
 import { auth } from './middleware/auth.js';
@@ -134,6 +135,7 @@ app.use('/api/leaves', leaveRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/salary', salaryRoutes);
 app.use('/api/activities', activityRoutes);
+app.use('/api/documents', documentRoutes);
 
 // ========== ROOT ENDPOINT ==========
 app.get('/', (req, res) => {
