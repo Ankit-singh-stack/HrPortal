@@ -38,7 +38,7 @@ const EmployeesList = () => {
     e.preventDefault();
     try {
       if (editingEmployee) {
-        await axios.put(`/api/users/${editingEmployee._id}`, formData);
+        await axios.put(`/users/${editingEmployee._id}`, formData);
         toast.success('Employee updated successfully');
       } else {
         await axios.post('/auth/register', formData);
@@ -55,7 +55,7 @@ const EmployeesList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        await axios.delete(`/api/users/${id}`);
+        await axios.delete(`/users/${id}`);
         toast.success('Employee deleted successfully');
         fetchEmployees();
       } catch (error) {

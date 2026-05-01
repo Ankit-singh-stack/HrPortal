@@ -20,8 +20,13 @@ const Attendance = () => {
   useEffect(() => {
     fetchAttendanceHistory();
     fetchStats();
-    checkTodayAttendance();
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (attendanceHistory.length > 0) {
+      checkTodayAttendance();
+    }
+  }, [attendanceHistory]);
 
   const fetchAttendanceHistory = async () => {
     setLoading(true);
@@ -55,23 +60,24 @@ const Attendance = () => {
     }
   };
 
-  const checkTodayAttendance = async () => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      const response = await axios.get('/attendance', {
-        params: { startDate: today, endDate: today }
+  const checkTodayAttendance = () => {
+    const today = new Date();
+    const todayStr = today.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    
+    const todayRecord = attendanceHistory.find(record => {
+      const recordDate = new Date(record.date).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
       });
-      const attendanceData = Array.isArray(response.data) 
-        ? response.data 
-        : response.data.attendance || [];
-      if (attendanceData.length > 0) {
-        setTodayStatus(attendanceData[0]);
-      } else {
-        setTodayStatus(null);
-      }
-    } catch (error) {
-      console.error('Error checking today attendance:', error);
-    }
+      return recordDate === todayStr;
+    });
+    
+    setTodayStatus(todayRecord || null);
   };
 
   const handleMarkAttendance = async () => {
@@ -100,7 +106,8 @@ const Attendance = () => {
         checkOutTime: currentTime
       });
       toast.success('Checked out successfully! 👋');
-      checkTodayAttendance();
+      fetchAttendanceHistory();
+      fetchStats();
     } catch (error) {
       toast.error('Failed to check out');
     }

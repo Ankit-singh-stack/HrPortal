@@ -51,7 +51,7 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.put(`/api/users/${user._id}`, formData);
+      const response = await axios.put(`/users/${user._id}`, formData);
       updateUser(response.data);
       toast.success('Profile updated successfully! ✨');
     } catch (error) {
