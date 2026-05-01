@@ -140,14 +140,60 @@ const SalaryManagement = () => {
     }
   };
 
-  const handleMarkAsPaid = async (id) => {
+  const handleMarkAsPaid = async (salary) => {
     try {
-      await axios.put(`/api/salary/${id}/pay`, { paymentMethod: 'bank' });
-      toast.success('Salary marked as paid');
-      fetchSalaries();
-      fetchStats();
+      setLoading(true);
+      // 1. Initiate payment on backend
+      const { data } = await axios.post('/salary-payment/initiate', { 
+        salaryIds: [salary._id] 
+      });
+
+      const result = data.results[0];
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder', // Should be in env
+        amount: result.amount * 100, // Amount in paise
+        currency: 'INR',
+        name: 'HR Management Portal',
+        description: `Salary for ${salary.userId.name} - ${new Date(2000, salary.month).toLocaleString('default', { month: 'long' })} ${salary.year}`,
+        order_id: result.orderId,
+        handler: async function (response) {
+          try {
+            // 3. Verify payment on backend
+            await axios.post('/salary-payment/confirm', {
+              salaryId: salary._id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature
+            });
+            
+            toast.success('Salary paid successfully via Razorpay');
+            fetchSalaries();
+            fetchStats();
+          } catch (error) {
+            console.error('Payment verification failed:', error);
+            toast.error('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: salary.userId.name,
+          email: salary.userId.email,
+        },
+        theme: {
+          color: '#4F46E5',
+        },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
     } catch (error) {
-      toast.error('Failed to update payment status');
+      console.error('Payment initiation failed:', error);
+      toast.error(error.response?.data?.message || error.message || 'Failed to initiate payment');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -378,7 +424,7 @@ const SalaryManagement = () => {
                             </button>
                             {salary.paymentStatus !== 'paid' && (
                               <button
-                                onClick={() => handleMarkAsPaid(salary._id)}
+                                onClick={() => handleMarkAsPaid(salary)}
                                 className="text-green-400 hover:text-green-300"
                               >
                                 <CheckCircle className="w-5 h-5" />
