@@ -108,7 +108,7 @@ export const updateSalary = async (req, res) => {
 };
 
 // Get all salaries (HR only)
-export getAllSalaries = async (req, res) => {
+export const getAllSalaries = async (req, res) => {
   try {
     const { month, year, userId, page = 1, limit = 50 } = req.query;
     const query = {};
