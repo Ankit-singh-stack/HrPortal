@@ -49,21 +49,33 @@ const salarySchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'processed', 'paid'],
+    enum: ['pending', 'processed', 'payment_pending', 'payment_initiated', 'paid', 'failed'],
     default: 'pending'
   },
   paymentDate: Date,
   paymentMethod: {
     type: String,
-    enum: ['bank', 'cash', 'cheque'],
-    default: 'bank'
+    enum: ['bank', 'cash', 'cheque', 'razorpay'],
+    default: 'razorpay'
   },
   bankAccount: String,
   remarks: String,
   processedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  // Payment tracking fields
+  paymentOrderId: String,        // Razorpay order ID
+  paymentId: String,             // Razorpay payment ID
+  paymentSignature: String,      // Razorpay signature
+  paymentInitiatedAt: Date,      // When payment was initiated
+  paymentInitiatedBy: {          // HR who initiated payment
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  paymentApprovedAt: Date,       // When payment was approved
+  paymentDueDate: Date,          // When payment should be completed
+  failureReason: String          // If payment failed
 }, {
   timestamps: true
 });

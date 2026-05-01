@@ -14,6 +14,7 @@ import './config/passport.js';
 // Import routes
 import authRoutes from './routes/authRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import salaryPaymentRoutes from './routes/salaryPaymentRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 import leaveRoutes from './routes/leaveRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -121,16 +122,13 @@ app.use((req, res, next) => {
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running', status: 'ok', timestamp: new Date() });
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ message: 'Server is running', status: 'ok', timestamp: new Date() });
 });
 
 // ========== ROUTE MIDDLEWARE ==========
 // Use imported routes
 app.use('/api/auth', authRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/salary-payment', salaryPaymentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/users', userRoutes);
