@@ -42,9 +42,19 @@ if (!fs.existsSync(uploadsDir)) {
 // ========== DATABASE CONNECTION ==========
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/hr-portal';
-    console.log('⏳ Connecting to MongoDB...');
-    const conn = await mongoose.connect(mongoUri);
+    const mongoUri = process.env.MONGO_URI;
+    
+    if (!mongoUri) {
+      console.error('❌ MONGO_URI is not defined in environment variables!');
+      throw new Error('MONGO_URI missing');
+    }
+
+    console.log(`⏳ Connecting to MongoDB... (URI length: ${mongoUri.length})`);
+    
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+    });
+    
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
