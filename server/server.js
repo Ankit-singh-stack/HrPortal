@@ -42,11 +42,14 @@ if (!fs.existsSync(uploadsDir)) {
 // ========== DATABASE CONNECTION ==========
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/hr-portal');
+    const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/hr-portal';
+    console.log('⏳ Connecting to MongoDB...');
+    const conn = await mongoose.connect(mongoUri);
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    process.exit(1);
+    console.error('Stack Trace:', error.stack);
+    throw error; // Re-throw to be caught in startServer
   }
 };
 
@@ -164,7 +167,8 @@ const startServer = async () => {
       console.log(`🔐 Integrations: Google OAuth, Razorpay, Cloudinary\n`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('❌ Failed to start server:', error);
+    if (error.stack) console.error('Stack Trace:', error.stack);
     process.exit(1);
   }
 };
