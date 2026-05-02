@@ -1,24 +1,13 @@
 import axios from 'axios';
 
 // Determine the API URL based on the environment
-const getApiUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
-  const isProd = import.meta.env.PROD;
-  const prodFallback = 'https://hrportal-server-7hkl.onrender.com/api';
-  
-  // If in production, and VITE_API_URL is missing or points to localhost, use the production fallback
-  if (isProd) {
-    if (!envUrl || envUrl.includes('localhost')) {
-      return prodFallback;
-    }
-    return envUrl;
-  }
-  
-  // In development, use VITE_API_URL or local fallback
-  return envUrl || 'http://localhost:5000/api';
-};
+const isProd = import.meta.env.PROD;
+const envUrl = import.meta.env.VITE_API_URL;
+const prodFallback = 'https://hrportal-server-7hkl.onrender.com/api';
 
-const API_URL = getApiUrl();
+const API_URL = isProd 
+  ? (envUrl && !envUrl.includes('localhost') ? envUrl : prodFallback)
+  : (envUrl || 'http://localhost:5000/api');
 
 console.log('🔗 API Base URL:', API_URL);
 console.log('🌍 Environment:', import.meta.env.PROD ? 'production' : 'development');

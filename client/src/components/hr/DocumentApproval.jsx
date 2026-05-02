@@ -118,7 +118,7 @@ const DocumentApproval = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                     <a 
-                      href={doc.fileUrl.replace('http://', 'https://')} 
+                      href={(doc.fileUrl || '').replace('http://', 'https://')} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400"
