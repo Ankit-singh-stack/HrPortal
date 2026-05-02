@@ -1,7 +1,24 @@
 import axios from 'axios';
 
-// Use environment variable if available, else fallback to production or local URL
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://hrportal-server-7hkl.onrender.com/api' : 'http://localhost:5000/api');
+// Determine the API URL based on the environment
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  const isProd = import.meta.env.PROD;
+  const prodFallback = 'https://hrportal-server-7hkl.onrender.com/api';
+  
+  // If in production, and VITE_API_URL is missing or points to localhost, use the production fallback
+  if (isProd) {
+    if (!envUrl || envUrl.includes('localhost')) {
+      return prodFallback;
+    }
+    return envUrl;
+  }
+  
+  // In development, use VITE_API_URL or local fallback
+  return envUrl || 'http://localhost:5000/api';
+};
+
+const API_URL = getApiUrl();
 
 console.log('🔗 API Base URL:', API_URL);
 console.log('🌍 Environment:', import.meta.env.PROD ? 'production' : 'development');
@@ -37,8 +54,12 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('Response error:', error.response?.status, error.response?.data);
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const message = error.response?.data?.message || error.message;
+    
+    console.error(`❌ API Error [${status || 'NETWORK'}]:`, message);
+    
+    if (status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
