@@ -13,13 +13,16 @@ export const uploadToCloudinary = async (file) => {
   try {
     const result = await cloudinary.uploader.upload(file.path, {
       folder: 'hr-portal',
-      resource_type: 'auto'
+      resource_type: 'auto',
+      flags: 'attachment:false' // Ensure it doesn't force download
     });
+    console.log('✅ Cloudinary Upload Success:', result.secure_url);
     return {
       url: result.secure_url,
       publicId: result.public_id
     };
   } catch (error) {
+    console.error('❌ Cloudinary Upload Error:', error);
     throw new Error(`Cloudinary upload failed: ${error.message}`);
   }
 };

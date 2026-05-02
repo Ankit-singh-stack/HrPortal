@@ -138,7 +138,7 @@ const DocumentUpload = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <FileText className="w-5 h-5 text-gray-400 mr-2" />
-                      <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      <a href={doc.fileUrl.replace('http://', 'https://')} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                         {doc.title}
                       </a>
                     </div>
