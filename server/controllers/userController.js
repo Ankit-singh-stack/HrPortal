@@ -40,12 +40,19 @@ export const updateUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
     
-    const { name, profile, role, isActive } = req.body;
+    const { name, profile, role, isActive, bankDetails } = req.body;
     
     if (name) user.name = name;
     if (profile) user.profile = { ...user.profile, ...profile };
     if (role && req.user.role === 'hr') user.role = role;
     if (isActive !== undefined && req.user.role === 'hr') user.isActive = isActive;
+
+    const self = req.user._id.toString() === user._id.toString();
+    if (bankDetails && (req.user.role === 'hr' || self)) {
+      user.bankDetails = { ...(user.bankDetails || {}), ...bankDetails };
+      user.razorpayFundAccountId = undefined;
+      user.payoutBankKey = undefined;
+    }
     
     await user.save();
     

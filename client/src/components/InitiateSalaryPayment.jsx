@@ -45,7 +45,12 @@ const InitiateSalaryPayment = ({ onSuccess }) => {
         salaryIds: selectedSalaries
       });
 
-      toast.success(`Payment initiated for ${response.data.results.filter(r => r.success).length} employee(s)`);
+      const ok = response.data.results.filter((r) => r.success).length;
+      if (response.data.payoutMode) {
+        toast.success(`Bank transfer completed for ${ok} employee(s)`);
+      } else {
+        toast.success(`Razorpay checkout started for ${ok} employee(s) — complete payment in the portal`);
+      }
       setSelectedSalaries([]);
       fetchProcessedSalaries();
 
@@ -122,7 +127,7 @@ const InitiateSalaryPayment = ({ onSuccess }) => {
                       </div>
                     </td>
                     <td className="p-2">{salary.month + 1}/{salary.year}</td>
-                    <td className="p-2 text-right font-semibold">₹{salary.netSalary.toLocaleString()}</td>
+                    <td className="p-2 text-right font-semibold">₹{isNaN(salary.netSalary) || !salary.netSalary ? '0' : salary.netSalary.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
                     <td className="p-2">
                       <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">
                         {salary.paymentStatus}
@@ -140,7 +145,7 @@ const InitiateSalaryPayment = ({ onSuccess }) => {
                 Selected: <span className="font-semibold">{selectedSalaries.length}</span> salary records
               </p>
               <p className="text-lg font-bold text-blue-600 mt-2">
-                Total Amount: ₹{totalAmount.toLocaleString()}
+                Total Amount: ₹{isNaN(totalAmount) || !totalAmount ? '0' : totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
               </p>
 
               <button

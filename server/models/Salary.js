@@ -59,6 +59,10 @@ const salarySchema = new mongoose.Schema({
     default: 'razorpay'
   },
   bankAccount: String,
+  /** RazorpayX bank payout (optional; else uses employee User.bankDetails) */
+  payoutAccountNumber: String,
+  payoutIfsc: String,
+  payoutAccountName: String,
   remarks: String,
   processedBy: {
     type: mongoose.Schema.Types.ObjectId,

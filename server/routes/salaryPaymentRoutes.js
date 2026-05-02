@@ -8,15 +8,15 @@ import {
   cancelSalaryPayment,
   getPaymentStatistics
 } from '../controllers/salaryPaymentController.js';
-import { protect } from '../middleware/auth.js';
+import { protect, hrOnly } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // HR routes - initiating payments
-router.post('/initiate', protect, initiateSalaryPayment);
-router.get('/initiated', protect, getInitiatedPayments);
-router.delete('/:salaryId/cancel', protect, cancelSalaryPayment);
-router.get('/statistics', protect, getPaymentStatistics);
+router.post('/initiate', protect, hrOnly, initiateSalaryPayment);
+router.get('/initiated', protect, hrOnly, getInitiatedPayments);
+router.delete('/:salaryId/cancel', protect, hrOnly, cancelSalaryPayment);
+router.get('/statistics', protect, hrOnly, getPaymentStatistics);
 
 // Employee routes - confirming payments
 router.post('/confirm', protect, confirmSalaryPayment);

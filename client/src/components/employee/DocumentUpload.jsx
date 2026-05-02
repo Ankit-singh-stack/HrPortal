@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../services/api';
+import { toDocumentViewUrl } from '../../utils/cloudinaryDocumentUrl';
 import toast from 'react-hot-toast';
 import { Upload, FileText, CheckCircle, Clock, XCircle, Trash2 } from 'lucide-react';
 
@@ -66,6 +67,7 @@ const DocumentUpload = () => {
       toast.error('Failed to delete document');
     }
   };
+
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -138,8 +140,13 @@ const DocumentUpload = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <FileText className="w-5 h-5 text-gray-400 mr-2" />
-                      <a href={(doc.fileUrl || '').replace('http://', 'https://')} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                        {doc.title}
+                      <a
+                        href={toDocumentViewUrl(doc.fileUrl.includes('http') ? doc.fileUrl : `https://${doc.fileUrl}`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline font-medium"
+                      >
+                        {doc.title || 'Untitled Document'}
                       </a>
                     </div>
                   </td>

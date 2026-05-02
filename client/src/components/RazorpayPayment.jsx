@@ -111,10 +111,10 @@ const RazorpayPayment = ({ amount, description, onPaymentSuccess, onPaymentFailu
   return (
     <button
       onClick={handlePayment}
-      disabled={loading}
+      disabled={loading || !amount || amount <= 0}
       className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
-      {loading ? 'Processing...' : `Pay ₹${amount}`}
+      {loading ? 'Processing...' : `Pay ₹${isNaN(amount) || !amount ? '0' : amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`}
     </button>
   );
 };

@@ -35,6 +35,8 @@ const SalaryManagement = () => {
     }
   });
   const [loading, setLoading] = useState(false);
+  /** When true, after save we call Razorpay (X bank payout or Checkout for UPI/card). */
+  const [payNowWithRazorpay, setPayNowWithRazorpay] = useState(true);
   const [formData, setFormData] = useState({
     userId: '',
     basicSalary: 0,
@@ -60,6 +62,9 @@ const SalaryManagement = () => {
     },
     paymentMethod: 'bank',
     bankAccount: '',
+    payoutAccountNumber: '',
+    payoutIfsc: '',
+    payoutAccountName: '',
     remarks: ''
   });
 
@@ -111,26 +116,145 @@ const SalaryManagement = () => {
     return formData.basicSalary + totalAllowances + (formData.bonus || 0) + overtimeAmount - totalDeductions;
   };
 
+  const buildSalaryRowForPayment = (savedRecord, employeeId) => {
+    const uid = employeeId || savedRecord.userId?._id || savedRecord.userId;
+    const emp = employees.find((e) => String(e._id) === String(uid));
+    const userIdObj =
+      emp
+        ? { _id: emp._id, name: emp.name, email: emp.email }
+        : typeof savedRecord.userId === 'object' && savedRecord.userId?.name
+          ? savedRecord.userId
+          : { _id: uid, name: 'Employee', email: '' };
+    return { ...savedRecord, userId: userIdObj };
+  };
+
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const runSalaryRazorpayFlow = async (salary) => {
+    const { data } = await axios.post('/salary-payment/initiate', {
+      salaryIds: [salary._id]
+    });
+
+    const result = data.results[0];
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+
+    if (result.mode === 'payout') {
+      toast.success('Salary sent to employee bank via Razorpay (IMPS)');
+      fetchSalaries();
+      fetchStats();
+      return;
+    }
+
+    if (!import.meta.env.VITE_RAZORPAY_KEY_ID) {
+      throw new Error(
+        'Missing VITE_RAZORPAY_KEY_ID — add the same Key ID as in Razorpay Dashboard to client/.env and restart the dev server'
+      );
+    }
+
+    const isLoaded = await loadRazorpay();
+    if (!isLoaded) {
+      throw new Error('Razorpay Checkout failed to load. Check your network.');
+    }
+
+    const employeeName = salary.userId?.name || 'Employee';
+    const employeeEmail = salary.userId?.email || '';
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: Math.round(Number(result.amount) * 100),
+      currency: 'INR',
+      name: 'HR Management Portal',
+      description: `Salary for ${employeeName} — ${new Date(2000, salary.month).toLocaleString('default', { month: 'long' })} ${salary.year}`,
+      order_id: result.orderId,
+      handler: async function (response) {
+        try {
+          await axios.post('/salary-payment/confirm', {
+            salaryId: salary._id,
+            paymentId: response.razorpay_payment_id,
+            signature: response.razorpay_signature
+          });
+          toast.success('Payment successful — UPI / card / netbanking');
+          fetchSalaries();
+          fetchStats();
+        } catch (err) {
+          console.error('Payment verification failed:', err);
+          toast.error(err.response?.data?.message || 'Payment verification failed');
+        }
+      },
+      prefill: {
+        name: employeeName,
+        email: employeeEmail
+      },
+      theme: { color: '#4F46E5' }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.on('payment.failed', (response) => {
+      toast.error(response.error?.description || 'Payment failed');
+    });
+    rzp.open();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const net = calculateNetSalary();
+    if (!formData.userId) {
+      toast.error('Select an employee');
+      return;
+    }
+    if (payNowWithRazorpay && net <= 0) {
+      toast.error(
+        'Net salary is ₹0. Enter basic salary and allowances (or reduce deductions) before taking payment.'
+      );
+      return;
+    }
+
     setLoading(true);
+    const shouldPayAfterSave = payNowWithRazorpay;
     try {
       const salaryData = {
         ...formData,
         month: selectedMonth,
-        year: selectedYear
+        year: selectedYear,
+        paymentMethod: shouldPayAfterSave ? 'razorpay' : formData.paymentMethod
       };
-      
+
+      let saved;
       if (editingSalary) {
-        await axios.put(`/salary/${editingSalary._id}`, salaryData);
+        const res = await axios.put(`/salary/${editingSalary._id}`, salaryData);
+        saved = res.data;
         toast.success('Salary updated successfully');
       } else {
-        await axios.post('/salary', salaryData);
-        toast.success('Salary processed successfully');
+        const res = await axios.post('/salary', salaryData);
+        saved = res.data;
+        toast.success('Salary saved successfully');
       }
-      
+
+      const employeeIdForPay = formData.userId;
       setShowModal(false);
       resetForm();
+
+      if (shouldPayAfterSave) {
+        try {
+          const row = buildSalaryRowForPayment(saved, employeeIdForPay);
+          await runSalaryRazorpayFlow(row);
+        } catch (payErr) {
+          console.error(payErr);
+          toast.error(payErr.message || 'Razorpay payment could not start');
+        }
+      }
+
       fetchSalaries();
       fetchStats();
     } catch (error) {
@@ -140,73 +264,10 @@ const SalaryManagement = () => {
     }
   };
 
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
   const handleMarkAsPaid = async (salary) => {
     try {
       setLoading(true);
-
-      // Load Razorpay script
-      const isLoaded = await loadRazorpay();
-      if (!isLoaded) {
-        toast.error('Razorpay SDK failed to load. Please check your internet connection.');
-        return;
-      }
-
-      // 1. Initiate payment on backend
-      const { data } = await axios.post('/salary-payment/initiate', { 
-        salaryIds: [salary._id] 
-      });
-
-      const result = data.results[0];
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-
-      // 2. Open Razorpay Checkout
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: result.amount * 100, // Amount in paise
-        currency: 'INR',
-        name: 'HR Management Portal',
-        description: `Salary for ${salary.userId.name} - ${new Date(2000, salary.month).toLocaleString('default', { month: 'long' })} ${salary.year}`,
-        order_id: result.orderId,
-        handler: async function (response) {
-          try {
-            // 3. Verify payment on backend
-            await axios.post('/salary-payment/confirm', {
-              salaryId: salary._id,
-              paymentId: response.razorpay_payment_id,
-              signature: response.razorpay_signature
-            });
-            
-            toast.success('Salary paid successfully via Razorpay');
-            fetchSalaries();
-            fetchStats();
-          } catch (error) {
-            console.error('Payment verification failed:', error);
-            toast.error('Payment verification failed. Please contact support.');
-          }
-        },
-        prefill: {
-          name: salary.userId.name,
-          email: salary.userId.email,
-        },
-        theme: {
-          color: '#4F46E5',
-        },
-      };
-
-      const rzp1 = new window.Razorpay(options);
-      rzp1.open();
+      await runSalaryRazorpayFlow(salary);
     } catch (error) {
       console.error('Payment initiation failed:', error);
       toast.error(error.response?.data?.message || error.message || 'Failed to initiate payment');
@@ -238,8 +299,12 @@ const SalaryManagement = () => {
       overtime: { hours: 0, rate: 0 },
       paymentMethod: 'bank',
       bankAccount: '',
+      payoutAccountNumber: '',
+      payoutIfsc: '',
+      payoutAccountName: '',
       remarks: ''
     });
+    setPayNowWithRazorpay(true);
     setEditingSalary(null);
   };
 
@@ -432,6 +497,9 @@ const SalaryManagement = () => {
                                   overtime: salary.overtime,
                                   paymentMethod: salary.paymentMethod,
                                   bankAccount: salary.bankAccount || '',
+                                  payoutAccountNumber: salary.payoutAccountNumber || '',
+                                  payoutIfsc: salary.payoutIfsc || '',
+                                  payoutAccountName: salary.payoutAccountName || '',
                                   remarks: salary.remarks || ''
                                 });
                                 setShowModal(true);
@@ -496,7 +564,10 @@ const SalaryManagement = () => {
                   <input
                     type="number"
                     value={formData.basicSalary}
-                    onChange={(e) => setFormData({ ...formData, basicSalary: parseFloat(e.target.value) })}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      setFormData({ ...formData, basicSalary: isNaN(val) ? 0 : val });
+                    }}
                     className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600 focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -506,7 +577,10 @@ const SalaryManagement = () => {
                   <input
                     type="number"
                     value={formData.bonus}
-                    onChange={(e) => setFormData({ ...formData, bonus: parseFloat(e.target.value) })}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      setFormData({ ...formData, bonus: isNaN(val) ? 0 : val });
+                    }}
                     className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600 focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -520,10 +594,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.allowances.houseRent}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        allowances: { ...formData.allowances, houseRent: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          allowances: { ...formData.allowances, houseRent: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -532,10 +609,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.allowances.dearness}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        allowances: { ...formData.allowances, dearness: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          allowances: { ...formData.allowances, dearness: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -544,10 +624,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.allowances.travel}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        allowances: { ...formData.allowances, travel: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          allowances: { ...formData.allowances, travel: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -556,10 +639,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.allowances.medical}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        allowances: { ...formData.allowances, medical: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          allowances: { ...formData.allowances, medical: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -568,10 +654,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.allowances.special}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        allowances: { ...formData.allowances, special: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          allowances: { ...formData.allowances, special: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -580,10 +669,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.allowances.other}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        allowances: { ...formData.allowances, other: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          allowances: { ...formData.allowances, other: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -598,10 +690,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.deductions.tax}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        deductions: { ...formData.deductions, tax: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          deductions: { ...formData.deductions, tax: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -610,10 +705,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.deductions.providentFund}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        deductions: { ...formData.deductions, providentFund: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          deductions: { ...formData.deductions, providentFund: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -622,10 +720,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.deductions.professionalTax}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        deductions: { ...formData.deductions, professionalTax: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          deductions: { ...formData.deductions, professionalTax: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -634,10 +735,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.deductions.loan}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        deductions: { ...formData.deductions, loan: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          deductions: { ...formData.deductions, loan: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -646,10 +750,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.deductions.other}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        deductions: { ...formData.deductions, other: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          deductions: { ...formData.deductions, other: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -664,10 +771,13 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.overtime.hours}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        overtime: { ...formData.overtime, hours: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          overtime: { ...formData.overtime, hours: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
                     />
                   </div>
@@ -676,11 +786,53 @@ const SalaryManagement = () => {
                     <input
                       type="number"
                       value={formData.overtime.rate}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        overtime: { ...formData.overtime, rate: parseFloat(e.target.value) }
-                      })}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        setFormData({
+                          ...formData,
+                          overtime: { ...formData.overtime, rate: isNaN(val) ? 0 : val }
+                        });
+                      }}
                       className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border border-gray-600 rounded-xl p-4 space-y-3">
+                <h4 className="text-lg font-semibold text-white">Salary payout bank (RazorpayX)</h4>
+                <p className="text-xs text-gray-400">
+                  For direct credit to employee bank, fill these or ensure the employee saved bank details in Profile. Required when using RAZORPAYX_ACCOUNT_NUMBER on the server.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Account holder name</label>
+                    <input
+                      type="text"
+                      value={formData.payoutAccountName}
+                      onChange={(e) => setFormData({ ...formData, payoutAccountName: e.target.value })}
+                      className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
+                      placeholder="As per bank"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Account number</label>
+                    <input
+                      type="text"
+                      value={formData.payoutAccountNumber}
+                      onChange={(e) => setFormData({ ...formData, payoutAccountNumber: e.target.value })}
+                      className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
+                      placeholder="Bank account no."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">IFSC</label>
+                    <input
+                      type="text"
+                      value={formData.payoutIfsc}
+                      onChange={(e) => setFormData({ ...formData, payoutIfsc: e.target.value.toUpperCase() })}
+                      className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600"
+                      placeholder="e.g. HDFC0001234"
                     />
                   </div>
                 </div>
@@ -697,11 +849,33 @@ const SalaryManagement = () => {
                 />
               </div>
 
-              <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-4">
+              <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-white">Net Salary:</span>
                   <span className="text-2xl font-bold text-blue-400">{formatCurrency(calculateNetSalary())}</span>
                 </div>
+                <label className="flex items-start gap-3 cursor-pointer text-sm text-gray-200">
+                  <input
+                    type="checkbox"
+                    className="mt-1 rounded border-gray-500"
+                    checked={payNowWithRazorpay}
+                    onChange={(e) => setPayNowWithRazorpay(e.target.checked)}
+                  />
+                  <span>
+                    <span className="font-medium text-white">Pay now with Razorpay</span>
+                    <span className="block text-xs text-gray-400 mt-1">
+                      After saving: sends salary to the employee&apos;s bank if RazorpayX is configured on the server;
+                      otherwise opens Checkout for UPI, cards, or netbanking (money settles in your Razorpay balance).
+                    </span>
+                  </span>
+                </label>
+                <p className="text-xs text-amber-200/90 leading-relaxed">
+                  <strong className="text-amber-100">Real money:</strong> use{' '}
+                  <code className="text-amber-100 bg-black/30 px-1 rounded">rzp_live_…</code> keys in both{' '}
+                  <code className="text-amber-100 bg-black/30 px-1 rounded">server/.env</code> and{' '}
+                  <code className="text-amber-100 bg-black/30 px-1 rounded">client/.env</code> (VITE_RAZORPAY_KEY_ID).
+                  Test keys (<code className="text-amber-100">rzp_test_</code>) always show demo UPI and no real debit.
+                </p>
               </div>
               
               <div className="flex gap-3 mt-6">
@@ -710,7 +884,15 @@ const SalaryManagement = () => {
                   disabled={loading}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold"
                 >
-                  {loading ? 'Processing...' : (editingSalary ? 'Update Salary' : 'Process Salary')}
+                  {loading
+                    ? 'Working...'
+                    : payNowWithRazorpay
+                      ? editingSalary
+                        ? 'Update & pay'
+                        : 'Process salary & pay'
+                      : editingSalary
+                        ? 'Update salary'
+                        : 'Save salary only'}
                 </button>
                 <button
                   type="button"

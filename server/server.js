@@ -162,20 +162,62 @@ app.use((err, req, res, next) => {
 });
 
 // ========== START SERVER ==========
-const PORT = process.env.PORT || 5000;
+const basePort = Number(process.env.PORT) || 5000;
+const isProduction = process.env.NODE_ENV === 'production';
+
+function listenOnPort(port) {
+  return new Promise((resolve, reject) => {
+    const srv = app.listen(port, () => resolve(srv));
+    srv.once('error', reject);
+  });
+}
 
 const startServer = async () => {
   try {
-    // Connect to database
     await connectDB();
 
-    app.listen(PORT, () => {
-      console.log(`\n🚀 Server is running!`);
-      console.log(`📍 API: http://localhost:${PORT}/api/health`);
-      console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`📍 Database: MongoDB Connected`);
-      console.log(`🔐 Integrations: Google OAuth, Razorpay, Cloudinary\n`);
-    });
+    let port = basePort;
+    let server;
+    const maxTries = isProduction ? 1 : 25;
+
+    for (let attempt = 0; attempt < maxTries; attempt++) {
+      try {
+        server = await listenOnPort(port);
+        if (!isProduction && attempt > 0) {
+          console.warn(
+            `\n⚠️  Port ${basePort} was busy — server is on ${port}.\n` +
+              `   Update client/.env: VITE_API_URL=http://localhost:${port}/api\n` +
+              `   Or stop the other Node process and use PORT=${basePort} only once.\n`
+          );
+        }
+        break;
+      } catch (err) {
+        if (err.code === 'EADDRINUSE' && !isProduction) {
+          console.warn(`⚠️  Port ${port} in use, trying ${port + 1}...`);
+          port++;
+          continue;
+        }
+        if (err.code === 'EADDRINUSE') {
+          console.error(
+            `\n❌ Port ${port} is already in use (production). Stop the other process or set PORT in .env.\n`
+          );
+        } else {
+          console.error('❌ Server listen error:', err.message);
+        }
+        process.exit(1);
+      }
+    }
+
+    if (!server) {
+      console.error('❌ Could not bind to a port.');
+      process.exit(1);
+    }
+
+    console.log(`\n🚀 Server is running!`);
+    console.log(`📍 API: http://localhost:${port}/api/health`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📍 Database: MongoDB Connected`);
+    console.log(`🔐 Integrations: Google OAuth, Razorpay, Cloudinary\n`);
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     if (error.stack) console.error('Stack Trace:', error.stack);

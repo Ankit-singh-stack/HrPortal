@@ -36,6 +36,16 @@ const userSchema = new mongoose.Schema({
     joinDate: Date,
     profilePicture: String // Cloudinary URL or Google profile picture
   },
+  /** Used for RazorpayX salary payouts to employee bank */
+  bankDetails: {
+    accountHolderName: String,
+    accountNumber: String,
+    ifsc: String
+  },
+  razorpayContactId: String,
+  razorpayFundAccountId: String,
+  /** `${ifsc}|${accountNumber}` — invalidates cached fund account when bank changes */
+  payoutBankKey: String,
   isActive: {
     type: Boolean,
     default: true

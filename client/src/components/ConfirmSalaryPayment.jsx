@@ -38,19 +38,36 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
     try {
       if (processing === salary._id) return;
 
+      // Validate salary amount
+      if (!salary.netSalary || isNaN(salary.netSalary) || salary.netSalary <= 0) {
+        toast.error('Invalid salary amount');
+        return;
+      }
+
+      if (!salary.paymentOrderId) {
+        toast.error('Payment order not initialized. Please try again.');
+        return;
+      }
+
+      if (!import.meta.env.VITE_RAZORPAY_KEY_ID) {
+        toast.error('Razorpay Key ID is not configured on the client');
+        return;
+      }
+
       setProcessing(salary._id);
 
       // Load Razorpay script
       const res = await loadRazorpay();
       if (!res) {
         toast.error('Razorpay SDK failed to load');
+        setProcessing(null);
         return;
       }
 
       // Razorpay payment options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: salary.netSalary * 100, // Amount in paise
+        amount: Math.round(Number(salary.netSalary) * 100),
         currency: 'INR',
         name: 'HR Portal - Salary Payment',
         description: `Salary Payment for ${salary.month + 1}/${salary.year}`,
@@ -71,7 +88,10 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
               onPaymentSuccess(verifyResponse.data.salary);
             }
           } catch (error) {
+            console.error('Payment verification error:', error);
             toast.error(error.response?.data?.message || 'Payment verification failed');
+          } finally {
+            setProcessing(null);
           }
         },
         prefill: {
@@ -82,22 +102,21 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
         }
       };
 
-      paymentObject = new window.Razorpay(options);
+      const paymentObject = new window.Razorpay(options);
 
       paymentObject.on('payment.failed', (response) => {
+        console.error('Payment failed:', response);
         toast.error(`Payment failed: ${response.error.description}`);
+        setProcessing(null);
       });
 
       paymentObject.open();
     } catch (error) {
       console.error('Payment error:', error);
       toast.error(error.message || 'Payment failed');
-    } finally {
       setProcessing(null);
     }
   };
-
-  let paymentObject;
 
   if (loading) {
     return (
@@ -150,19 +169,19 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-700">Net Salary:</span>
                 <span className="text-xl font-bold text-blue-600">
-                  ₹{salary.netSalary.toLocaleString()}
+                  ₹{isNaN(salary.netSalary) || !salary.netSalary ? '0' : salary.netSalary.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </span>
               </div>
               <div className="flex justify-between items-center text-sm text-gray-600">
                 <span>Due Date:</span>
-                <span>{new Date(salary.paymentDueDate).toLocaleDateString()}</span>
+                <span>{salary.paymentDueDate ? new Date(salary.paymentDueDate).toLocaleDateString() : 'N/A'}</span>
               </div>
             </div>
 
             <div className="flex gap-2">
               <button
                 onClick={() => handleCompletePayment(salary)}
-                disabled={processing === salary._id}
+                disabled={processing === salary._id || isNaN(salary.netSalary) || !salary.netSalary}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
               >
                 <CreditCard size={18} />
@@ -174,15 +193,15 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
               <div className="mt-3 pt-3 border-t text-xs text-gray-600 space-y-1">
                 <div className="flex justify-between">
                   <span>Basic Salary:</span>
-                  <span>₹{salary.basicSalary.toLocaleString()}</span>
+                  <span>₹{isNaN(salary.basicSalary) ? '0' : salary.basicSalary.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                 </div>
                 {Object.values(salary.allowances || {}).some(v => v > 0) && (
                   <div className="flex justify-between">
                     <span>Allowances:</span>
                     <span>
                       ₹{Object.values(salary.allowances || {})
-                        .reduce((sum, v) => sum + v, 0)
-                        .toLocaleString()}
+                        .reduce((sum, v) => sum + (isNaN(v) ? 0 : v), 0)
+                        .toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
                 )}
@@ -191,8 +210,8 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
                     <span>Deductions:</span>
                     <span>
                       -₹{Object.values(salary.deductions || {})
-                        .reduce((sum, v) => sum + v, 0)
-                        .toLocaleString()}
+                        .reduce((sum, v) => sum + (isNaN(v) ? 0 : v), 0)
+                        .toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
                 )}

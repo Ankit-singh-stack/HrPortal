@@ -4,11 +4,11 @@ import { ActivityLog } from '../models/ActivityLog.js';
 
 // Calculate net salary
 const calculateNetSalary = (basicSalary, allowances, deductions, bonus, overtime) => {
-  const totalAllowances = Object.values(allowances).reduce((sum, val) => sum + (val || 0), 0);
-  const totalDeductions = Object.values(deductions).reduce((sum, val) => sum + (val || 0), 0);
-  const overtimeAmount = (overtime?.hours || 0) * (overtime?.rate || 0);
+  const totalAllowances = Object.values(allowances || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+  const totalDeductions = Object.values(deductions || {}).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+  const overtimeAmount = (parseFloat(overtime?.hours) || 0) * (parseFloat(overtime?.rate) || 0);
   
-  return basicSalary + totalAllowances + (bonus || 0) + overtimeAmount - totalDeductions;
+  return (parseFloat(basicSalary) || 0) + totalAllowances + (parseFloat(bonus) || 0) + overtimeAmount - totalDeductions;
 };
 
 // Process salary (HR only)
@@ -16,7 +16,8 @@ export const processSalary = async (req, res) => {
   try {
     const { 
       userId, month, year, basicSalary, allowances, deductions, 
-      bonus, overtime, paymentMethod, bankAccount, remarks 
+      bonus, overtime, paymentMethod, bankAccount, remarks,
+      payoutAccountNumber, payoutIfsc, payoutAccountName
     } = req.body;
     
     // Check if salary already processed for this month
@@ -39,6 +40,9 @@ export const processSalary = async (req, res) => {
       netSalary,
       paymentMethod,
       bankAccount,
+      payoutAccountNumber,
+      payoutIfsc,
+      payoutAccountName,
       remarks,
       processedBy: req.user._id,
       paymentStatus: 'processed'
@@ -70,7 +74,18 @@ export const processSalary = async (req, res) => {
 export const updateSalary = async (req, res) => {
   try {
     const { id } = req.params;
-    const { basicSalary, allowances, deductions, bonus, overtime, paymentStatus, remarks } = req.body;
+    const {
+      basicSalary,
+      allowances,
+      deductions,
+      bonus,
+      overtime,
+      paymentStatus,
+      remarks,
+      payoutAccountNumber,
+      payoutIfsc,
+      payoutAccountName
+    } = req.body;
     
     const salary = await Salary.findById(id);
     if (!salary) {
@@ -84,6 +99,9 @@ export const updateSalary = async (req, res) => {
     if (overtime) salary.overtime = { ...salary.overtime, ...overtime };
     if (paymentStatus) salary.paymentStatus = paymentStatus;
     if (remarks) salary.remarks = remarks;
+    if (payoutAccountNumber !== undefined) salary.payoutAccountNumber = payoutAccountNumber;
+    if (payoutIfsc !== undefined) salary.payoutIfsc = payoutIfsc;
+    if (payoutAccountName !== undefined) salary.payoutAccountName = payoutAccountName;
     
     salary.netSalary = calculateNetSalary(
       salary.basicSalary, 
@@ -110,7 +128,7 @@ export const updateSalary = async (req, res) => {
 // Get all salaries (HR only)
 export const getAllSalaries = async (req, res) => {
   try {
-    const { month, year, userId, page = 1, limit = 50 } = req.query;
+    const { month, year, userId, page = 1, limit = 50, status, paymentStatus } = req.query;
     const query = {};
     
     if (month !== undefined && year) {
@@ -118,6 +136,8 @@ export const getAllSalaries = async (req, res) => {
       query.year = parseInt(year);
     }
     if (userId) query.userId = userId;
+    const ps = paymentStatus || status;
+    if (ps) query.paymentStatus = ps;
     
     const skip = (parseInt(page) - 1) * parseInt(limit);
     

@@ -1,6 +1,6 @@
 import { Document } from '../models/Document.js';
 import { ActivityLog } from '../models/ActivityLog.js';
-import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
+import { uploadDocumentToCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import fs from 'fs';
 
 export const uploadDocument = async (req, res) => {
@@ -16,17 +16,20 @@ export const uploadDocument = async (req, res) => {
       return res.status(400).json({ message: 'Title is required' });
     }
 
-    const result = await uploadToCloudinary(req.file);
-    
+    const result = await uploadDocumentToCloudinary(req.file);
+
     if (fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
+
+    const resourceType = result.resourceType === 'raw' ? 'raw' : 'image';
 
     const document = await Document.create({
       userId: req.user._id,
       title,
       fileUrl: result.url,
-      cloudinaryId: result.publicId
+      cloudinaryId: result.publicId,
+      cloudinaryResourceType: resourceType
     });
 
     await ActivityLog.create({
@@ -100,7 +103,10 @@ export const deleteDocument = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
-    await deleteFromCloudinary(document.cloudinaryId);
+    await deleteFromCloudinary(
+      document.cloudinaryId,
+      document.cloudinaryResourceType || 'image'
+    );
     await document.deleteOne();
 
     res.json({ message: 'Document deleted successfully' });

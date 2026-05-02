@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../services/api';
+import { toDocumentViewUrl } from '../../utils/cloudinaryDocumentUrl';
 import toast from 'react-hot-toast';
 import { FileText, CheckCircle, XCircle, Search, Eye } from 'lucide-react';
 
@@ -36,6 +37,7 @@ const DocumentApproval = () => {
       toast.error('Failed to update status');
     }
   };
+
 
   const filteredDocs = documents.filter(doc => {
     const matchesSearch = doc.userId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -117,9 +119,9 @@ const DocumentApproval = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                    <a 
-                      href={(doc.fileUrl || '').replace('http://', 'https://')} 
-                      target="_blank" 
+                    <a
+                      href={toDocumentViewUrl(doc.fileUrl.includes('http') ? doc.fileUrl : `https://${doc.fileUrl}`)}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center text-blue-600 hover:text-blue-900 dark:text-blue-400"
                       title="View Document"

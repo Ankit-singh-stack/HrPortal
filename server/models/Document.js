@@ -19,6 +19,12 @@ const documentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  /** Cloudinary resource_type for delete; PDF/DOC use raw (browser-safe URL). */
+  cloudinaryResourceType: {
+    type: String,
+    enum: ['image', 'raw'],
+    default: 'image'
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
