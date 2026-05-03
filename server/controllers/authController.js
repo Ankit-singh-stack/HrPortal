@@ -98,8 +98,13 @@ export const googleAuthCallback = async (req, res) => {
 
     const token = generateToken(user._id);
 
+    const clientUrl = process.env.CLIENT_URL || 
+      (process.env.NODE_ENV === 'production' 
+        ? 'https://hrportal-client.onrender.com' 
+        : 'http://localhost:5173');
+
     // Redirect to frontend with token
-    const redirectUrl = `${process.env.CLIENT_URL}/auth-success?token=${token}&userId=${user._id}&name=${user.name}&email=${user.email}&role=${user.role}`;
+    const redirectUrl = `${clientUrl}/auth-success?token=${token}&userId=${user._id}&name=${user.name}&email=${user.email}&role=${user.role}`;
     res.redirect(redirectUrl);
   } catch (error) {
     res.status(500).json({ message: error.message });
