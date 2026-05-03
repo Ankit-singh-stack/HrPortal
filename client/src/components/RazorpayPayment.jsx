@@ -44,7 +44,7 @@ const RazorpayPayment = ({ amount, description, onPaymentSuccess, onPaymentFailu
 
       // Razorpay payment options
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID?.trim(),
         amount: amount * 100, // Amount in paise
         currency: 'INR',
         name: 'HR Portal',

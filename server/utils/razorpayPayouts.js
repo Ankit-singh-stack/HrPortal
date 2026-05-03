@@ -4,9 +4,9 @@ import { User } from '../models/User.js';
 const API_BASE = 'https://api.razorpay.com';
 
 function getCredentials() {
-  const keyId = process.env.RAZORPAYX_KEY_ID || process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAYX_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET;
-  const accountNumber = process.env.RAZORPAYX_ACCOUNT_NUMBER;
+  const keyId = (process.env.RAZORPAYX_KEY_ID || process.env.RAZORPAY_KEY_ID)?.trim();
+  const keySecret = (process.env.RAZORPAYX_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET)?.trim();
+  const accountNumber = process.env.RAZORPAYX_ACCOUNT_NUMBER?.trim();
   return { keyId, keySecret, accountNumber };
 }
 
