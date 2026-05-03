@@ -81,16 +81,21 @@ const RazorpayPayment = ({ amount, description, onPaymentSuccess, onPaymentFailu
         }
       };
 
+      console.log('💳 Opening Razorpay Checkout with options:', { ...options, key: '***' });
       const paymentObject = new window.Razorpay(options);
 
       paymentObject.on('payment.failed', async (response) => {
         try {
+          console.error('❌ Razorpay Payment Failed:', response.error);
+          
           await api.post('/payment/failure', {
             orderId,
             paymentRecordId
           });
 
-          toast.error(`Payment failed: ${response.error.description}`);
+          const errorMsg = response.error.description || response.error.reason || 'Payment failed';
+          toast.error(`Payment failed: ${errorMsg}`);
+          
           if (onPaymentFailure) {
             onPaymentFailure(response.error);
           }

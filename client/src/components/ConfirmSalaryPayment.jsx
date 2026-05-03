@@ -95,18 +95,22 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
           }
         },
         prefill: {
-          contact: ''
+          name: salary.userId?.name || '',
+          email: salary.userId?.email || '',
+          contact: salary.userId?.profile?.phone || ''
         },
         theme: {
           color: '#3399cc'
         }
       };
 
+      console.log('💳 Opening Razorpay Checkout for salary:', salary._id, 'Order:', salary.paymentOrderId);
       const paymentObject = new window.Razorpay(options);
 
       paymentObject.on('payment.failed', (response) => {
-        console.error('Payment failed:', response);
-        toast.error(`Payment failed: ${response.error.description}`);
+        console.error('❌ Razorpay Payment Failed:', response.error);
+        const errorMsg = response.error.description || response.error.reason || 'Payment failed';
+        toast.error(`Payment failed: ${errorMsg}`);
         setProcessing(null);
       });
 

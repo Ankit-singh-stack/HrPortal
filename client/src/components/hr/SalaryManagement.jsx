@@ -194,14 +194,18 @@ const SalaryManagement = () => {
       },
       prefill: {
         name: employeeName,
-        email: employeeEmail
+        email: employeeEmail,
+        contact: salary.userId?.profile?.phone || ''
       },
       theme: { color: '#4F46E5' }
     };
 
+    console.log('💳 Opening Razorpay Checkout for employee:', employeeName, 'Amount:', result.amount);
     const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', (response) => {
-      toast.error(response.error?.description || 'Payment failed');
+      console.error('❌ Razorpay Payment Failed:', response.error);
+      const errorMsg = response.error.description || response.error.reason || 'Payment failed';
+      toast.error(`Payment failed: ${errorMsg}`);
     });
     rzp.open();
   };
