@@ -70,7 +70,7 @@ const Register = () => {
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
-          <p className="text-gray-600 mt-2">Join our HR Management Portal</p>
+          <p className="text-gray-600 mt-2">Join our Payment Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -148,8 +148,8 @@ const Register = () => {
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="employee">Employee</option>
-              <option value="hr">HR Manager</option>
+              <option value="employee">User</option>
+              <option value="hr">Admin</option>
             </select>
           </div>
 

@@ -90,7 +90,7 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
     { path: '/employee/profile', icon: User, label: 'My Profile', color: 'text-green-600' },
     { path: '/employee/attendance', icon: Calendar, label: 'Attendance', color: 'text-purple-600' },
     { path: '/employee/leaves', icon: FileText, label: 'Leave Application', color: 'text-yellow-600' },
-    { path: '/employee/salary', icon: DollarSign, label: 'My Salary', color: 'text-pink-600' },
+    { path: '/employee/salary', icon: DollarSign, label: 'My Payments', color: 'text-pink-600' },
     { path: '/employee/documents', icon: FileText, label: 'My Documents', color: 'text-indigo-600' },
   ];
 
@@ -115,7 +115,7 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
                 <Briefcase className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-sm font-bold truncate">Employee Portal</h1>
+                <h1 className="text-sm font-bold truncate">User Dashboard</h1>
               </div>
             </div>
             <button
@@ -135,7 +135,7 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
             <div className="min-w-0">
               <p className="font-medium truncate text-sm">{user?.name}</p>
               <p className="text-xs text-gray-400 truncate">{user?.email?.split('@')[0]}</p>
-              <span className="inline-block px-1.5 py-0.5 bg-green-600 text-[10px] rounded-full mt-1">Employee</span>
+              <span className="inline-block px-1.5 py-0.5 bg-green-600 text-[10px] rounded-full mt-1">User</span>
             </div>
           </div>
         </div>
@@ -191,7 +191,7 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Briefcase className="w-4 h-4 text-white" />
             </div>
-            <h2 className="text-sm font-bold text-gray-800 dark:text-white">Employee Portal</h2>
+            <h2 className="text-sm font-bold text-gray-800 dark:text-white">User Dashboard</h2>
           </div>
           <button
             onClick={() => setSidebarOpen(true)}

@@ -49,7 +49,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 px-4">
       <div className="bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">HR Management Portal</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Payment Portal</h1>
           <p className="text-gray-600 mt-2 text-sm sm:text-base">Sign in to your account</p>
         </div>
 

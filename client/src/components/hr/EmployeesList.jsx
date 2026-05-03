@@ -88,7 +88,7 @@ const EmployeesList = () => {
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Employees</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Users</h2>
         <button
           onClick={() => {
             resetForm();
@@ -97,7 +97,7 @@ const EmployeesList = () => {
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-200"
         >
           <Plus className="w-5 h-5" />
-          Add Employee
+          Add User
         </button>
       </div>
       
@@ -105,7 +105,7 @@ const EmployeesList = () => {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder="Search employees..."
+          placeholder="Search transactions..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
@@ -174,7 +174,7 @@ const EmployeesList = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                {editingEmployee ? 'Edit Employee' : 'Add Employee'}
+                {editingEmployee ? 'Edit User' : 'Add User'}
               </h3>
               <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <X className="w-6 h-6" />
@@ -244,7 +244,7 @@ const EmployeesList = () => {
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 >
-                  <option value="employee">Employee</option>
+                  <option value="employee">User</option>
                   <option value="hr">HR</option>
                 </select>
               </div>

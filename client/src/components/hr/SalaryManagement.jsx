@@ -326,9 +326,9 @@ const SalaryManagement = () => {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Salary Management
+              Payment Management
             </h2>
-            <p className="text-gray-400 mt-2">Process employee salaries and manage payroll</p>
+            <p className="text-gray-400 mt-2">Manage and process payments for platform users</p>
           </div>
           <button
             onClick={() => {
@@ -338,7 +338,7 @@ const SalaryManagement = () => {
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:shadow-lg transition-all duration-300"
           >
             <Plus className="w-5 h-5" />
-            Process Salary
+            + Initiate Payment
           </button>
         </div>
 
@@ -347,7 +347,7 @@ const SalaryManagement = () => {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-purple-900/30">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Total Payroll</p>
+                <p className="text-gray-400 text-sm">Total Payments</p>
                 <p className="text-2xl font-bold text-purple-400">{formatCurrency(stats.summary.totalPayroll)}</p>
               </div>
               <div className="w-12 h-12 bg-purple-900/30 rounded-full flex items-center justify-center">
@@ -359,7 +359,7 @@ const SalaryManagement = () => {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-blue-900/30">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Average Salary</p>
+                <p className="text-gray-400 text-sm">Average Transaction Value</p>
                 <p className="text-2xl font-bold text-blue-400">{formatCurrency(stats.summary.averageSalary)}</p>
               </div>
               <div className="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center">
@@ -371,7 +371,7 @@ const SalaryManagement = () => {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-green-900/30">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Paid Salaries</p>
+                <p className="text-gray-400 text-sm">Completed Payments</p>
                 <p className="text-2xl font-bold text-green-400">{stats.summary.paidCount}</p>
               </div>
               <div className="w-12 h-12 bg-green-900/30 rounded-full flex items-center justify-center">
@@ -383,7 +383,7 @@ const SalaryManagement = () => {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-yellow-900/30">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Pending Salaries</p>
+                <p className="text-gray-400 text-sm">Pending Payments</p>
                 <p className="text-2xl font-bold text-yellow-400">{stats.summary.pendingCount}</p>
               </div>
               <div className="w-12 h-12 bg-yellow-900/30 rounded-full flex items-center justify-center">
@@ -397,7 +397,7 @@ const SalaryManagement = () => {
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 mb-6 border border-gray-700">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Month</label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Select Month</label>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
@@ -409,7 +409,7 @@ const SalaryManagement = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Year</label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Select Year</label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
@@ -427,7 +427,7 @@ const SalaryManagement = () => {
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <Search className="w-5 h-5" />
-                Search
+                Search Transactions
               </button>
             </div>
           </div>
@@ -439,12 +439,12 @@ const SalaryManagement = () => {
             <table className="min-w-full">
               <thead className="bg-gradient-to-r from-gray-700 to-gray-800">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Employee</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Basic Salary</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Allowances</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Deductions</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Net Salary</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">User</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Base Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Additional Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Adjustments</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Final Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Payment Status</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Actions</th>
                 </tr>
               </thead>
@@ -471,7 +471,7 @@ const SalaryManagement = () => {
                         <td className="px-6 py-4">
                           <div>
                             <p className="font-medium text-white">{salary.userId?.name}</p>
-                            <p className="text-xs text-gray-400">{salary.userId?.profile?.designation || 'Employee'}</p>
+                            <p className="text-xs text-gray-400">{salary.userId?.profile?.designation || 'User'}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-white">{formatCurrency(salary.basicSalary)}</td>
@@ -484,7 +484,10 @@ const SalaryManagement = () => {
                             salary.paymentStatus === 'processed' ? 'bg-yellow-900/50 text-yellow-400' :
                             'bg-gray-700 text-gray-400'
                           }`}>
-                            {salary.paymentStatus.toUpperCase()}
+                            {salary.paymentStatus === 'processed' ? 'Completed' : 
+                             salary.paymentStatus === 'payment_initiated' ? 'Initiated' :
+                             salary.paymentStatus === 'paid' ? 'Successful' :
+                             salary.paymentStatus.toUpperCase()}
                           </span>
                         </td>
                         <td className="px-6 py-4">
@@ -538,7 +541,7 @@ const SalaryManagement = () => {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 max-w-4xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-white">
-                {editingSalary ? 'Edit Salary' : 'Process Salary'}
+                {editingSalary ? 'Edit Payment' : 'Initiate Payment'}
               </h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
                 <X className="w-6 h-6" />
@@ -547,7 +550,7 @@ const SalaryManagement = () => {
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Employee</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">User</label>
                 <select
                   value={formData.userId}
                   onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
@@ -557,14 +560,14 @@ const SalaryManagement = () => {
                 >
                   <option value="">Select Employee</option>
                   {employees.map(emp => (
-                    <option key={emp._id} value={emp._id}>{emp.name} - {emp.profile?.designation || 'Employee'}</option>
+                    <option key={emp._id} value={emp._id}>{emp.name} - {emp.profile?.designation || 'User'}</option>
                   ))}
                 </select>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Basic Salary</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Base Amount</label>
                   <input
                     type="number"
                     value={formData.basicSalary}

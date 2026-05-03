@@ -69,8 +69,8 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: Math.round(Number(salary.netSalary) * 100),
         currency: 'INR',
-        name: 'HR Portal - Salary Payment',
-        description: `Salary Payment for ${salary.month + 1}/${salary.year}`,
+        name: 'Payment Portal - Checkout',
+        description: `Payment for ${salary.month + 1}/${salary.year}`,
         order_id: salary.paymentOrderId,
         handler: async (response) => {
           try {
@@ -138,8 +138,8 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="text-center py-8 bg-green-50 rounded-lg">
           <CheckCircle className="mx-auto text-green-500 mb-2" size={32} />
-          <p className="text-gray-700 font-medium">No pending salary payments</p>
-          <p className="text-sm text-gray-500 mt-1">All your salaries have been paid</p>
+          <p className="text-gray-700 font-medium">No pending payments</p>
+          <p className="text-sm text-gray-500 mt-1">All your payments have been completed</p>
         </div>
       </div>
     );
@@ -149,7 +149,7 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
         <Clock className="text-orange-600" size={24} />
-        Pending Salary Payments ({pendingPayments.length})
+        Pending Payments ({pendingPayments.length})
       </h2>
 
       <div className="space-y-4">
@@ -171,7 +171,7 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
 
             <div className="bg-gray-50 p-3 rounded mb-3">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-700">Net Salary:</span>
+                <span className="text-gray-700">Final Amount:</span>
                 <span className="text-xl font-bold text-blue-600">
                   ₹{isNaN(salary.netSalary) || !salary.netSalary ? '0' : salary.netSalary.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </span>
@@ -196,12 +196,12 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
             {salary.basicSalary && (
               <div className="mt-3 pt-3 border-t text-xs text-gray-600 space-y-1">
                 <div className="flex justify-between">
-                  <span>Basic Salary:</span>
+                  <span>Base Amount:</span>
                   <span>₹{isNaN(salary.basicSalary) ? '0' : salary.basicSalary.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                 </div>
                 {Object.values(salary.allowances || {}).some(v => v > 0) && (
                   <div className="flex justify-between">
-                    <span>Allowances:</span>
+                    <span>Additional Amount:</span>
                     <span>
                       ₹{Object.values(salary.allowances || {})
                         .reduce((sum, v) => sum + (isNaN(v) ? 0 : v), 0)
@@ -211,7 +211,7 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
                 )}
                 {Object.values(salary.deductions || {}).some(v => v > 0) && (
                   <div className="flex justify-between text-red-600">
-                    <span>Deductions:</span>
+                    <span>Adjustments:</span>
                     <span>
                       -₹{Object.values(salary.deductions || {})
                         .reduce((sum, v) => sum + (isNaN(v) ? 0 : v), 0)

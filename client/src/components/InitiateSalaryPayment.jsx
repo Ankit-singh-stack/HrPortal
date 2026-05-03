@@ -72,7 +72,7 @@ const InitiateSalaryPayment = ({ onSuccess }) => {
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
         <Send className="text-blue-600" size={24} />
-        Initiate Salary Payments
+        Initiate Payments
       </h2>
 
       {loading ? (
@@ -104,9 +104,9 @@ const InitiateSalaryPayment = ({ onSuccess }) => {
                       checked={selectedSalaries.length === salaries.length && salaries.length > 0}
                     />
                   </th>
-                  <th className="text-left p-2">Employee</th>
+                  <th className="text-left p-2">User</th>
                   <th className="text-left p-2">Month/Year</th>
-                  <th className="text-right p-2">Net Salary</th>
+                  <th className="text-right p-2">Final Amount</th>
                   <th className="text-left p-2">Status</th>
                 </tr>
               </thead>
@@ -142,7 +142,7 @@ const InitiateSalaryPayment = ({ onSuccess }) => {
           {selectedSalaries.length > 0 && (
             <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-gray-600">
-                Selected: <span className="font-semibold">{selectedSalaries.length}</span> salary records
+                Selected: <span className="font-semibold">{selectedSalaries.length}</span> payment records
               </p>
               <p className="text-lg font-bold text-blue-600 mt-2">
                 Total Amount: ₹{isNaN(totalAmount) || !totalAmount ? '0' : totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}

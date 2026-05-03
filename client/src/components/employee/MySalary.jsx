@@ -57,9 +57,9 @@ const MySalary = () => {
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            My Salary
+            My Payments
           </h2>
-          <p className="text-gray-400 mt-2">View your salary details and payment history</p>
+          <p className="text-gray-400 mt-2">View your payment details and transaction history</p>
         </div>
 
         {/* Year Filter */}
@@ -110,7 +110,7 @@ const MySalary = () => {
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-blue-900/30">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Net Salary Received</p>
+                <p className="text-gray-400 text-sm">Net Amount Received</p>
                 <p className="text-2xl font-bold text-blue-400">{formatCurrency(totalNetSalary)}</p>
               </div>
               <div className="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center">
@@ -123,8 +123,8 @@ const MySalary = () => {
         {/* Salary History Table */}
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
           <div className="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-4">
-            <h3 className="text-xl font-bold text-white">Salary History</h3>
-            <p className="text-gray-400 text-sm mt-1">Monthly salary breakdown</p>
+            <h3 className="text-xl font-bold text-white">Payment History</h3>
+            <p className="text-gray-400 text-sm mt-1">Monthly payment breakdown</p>
           </div>
           
           <div className="overflow-x-auto">
@@ -132,11 +132,11 @@ const MySalary = () => {
               <thead className="bg-gray-700/50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Month</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Basic Salary</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Allowances</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Deductions</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Base Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Additional Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Adjustments</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Bonus</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Net Salary</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Final Amount</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-300 uppercase">Actions</th>
                 </tr>
@@ -203,7 +203,7 @@ const MySalary = () => {
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-white">Salary Details</h3>
+              <h3 className="text-2xl font-bold text-white">Payment Details</h3>
               <button onClick={() => setSelectedSalary(null)} className="text-gray-400 hover:text-white transition-colors">
                 <X className="w-6 h-6" />
               </button>
@@ -212,14 +212,14 @@ const MySalary = () => {
             <div className="space-y-6">
               <div className="text-center border-b border-gray-700 pb-4">
                 <h4 className="text-xl font-bold text-white">
-                  Payslip for {getMonthName(selectedSalary.month)} {selectedSalary.year}
+                  Transaction for {getMonthName(selectedSalary.month)} {selectedSalary.year}
                 </h4>
                 <p className="text-gray-400 mt-1">Payment Status: {selectedSalary.paymentStatus?.toUpperCase() || 'PENDING'}</p>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-700/30 rounded-xl p-4">
-                  <p className="text-gray-400 text-sm">Basic Salary</p>
+                  <p className="text-gray-400 text-sm">Base Amount</p>
                   <p className="text-xl font-bold text-white">{formatCurrency(selectedSalary.basicSalary)}</p>
                 </div>
                 <div className="bg-gray-700/30 rounded-xl p-4">
@@ -229,7 +229,7 @@ const MySalary = () => {
               </div>
               
               <div>
-                <h5 className="text-lg font-semibold text-white mb-3">Allowances</h5>
+                <h5 className="text-lg font-semibold text-white mb-3">Additional Amount</h5>
                 <div className="space-y-2">
                   {Object.entries(selectedSalary.allowances || {}).map(([key, value]) => (
                     value > 0 && (
@@ -246,7 +246,7 @@ const MySalary = () => {
               </div>
               
               <div>
-                <h5 className="text-lg font-semibold text-white mb-3">Deductions</h5>
+                <h5 className="text-lg font-semibold text-white mb-3">Adjustments</h5>
                 <div className="space-y-2">
                   {Object.entries(selectedSalary.deductions || {}).map(([key, value]) => (
                     value > 0 && (
@@ -272,7 +272,7 @@ const MySalary = () => {
               
               <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-white">Net Salary:</span>
+                  <span className="text-lg font-semibold text-white">Final Amount:</span>
                   <span className="text-2xl font-bold text-blue-400">{formatCurrency(selectedSalary.netSalary)}</span>
                 </div>
               </div>

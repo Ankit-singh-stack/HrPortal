@@ -102,10 +102,10 @@ const HRDashboard = ({ darkMode, setDarkMode }) => {
 
   const menuItems = [
     { path: '/hr', icon: Home, label: 'Dashboard' },
-    { path: '/hr/employees', icon: Users, label: 'Employees' },
+    { path: '/hr/employees', icon: Users, label: 'Users' },
     { path: '/hr/attendance', icon: Calendar, label: 'Attendance' },
     { path: '/hr/leaves', icon: FileText, label: 'Leave Requests' },
-    { path: '/hr/salary', icon: DollarSign, label: 'Salary Management' },
+    { path: '/hr/salary', icon: DollarSign, label: 'Payments' },
     { path: '/hr/activities', icon: Activity, label: 'Activity Logs' },
     { path: '/hr/documents', icon: FileText, label: 'Document Approvals' },
   ];
@@ -131,7 +131,7 @@ const HRDashboard = ({ darkMode, setDarkMode }) => {
                 <Briefcase className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-sm font-bold truncate">HR Portal</h1>
+                <h1 className="text-sm font-bold truncate">Admin Dashboard</h1>
                 <p className="text-[10px] text-gray-400 truncate">Management</p>
               </div>
             </div>
@@ -152,7 +152,7 @@ const HRDashboard = ({ darkMode, setDarkMode }) => {
             <div className="min-w-0">
               <p className="font-medium truncate text-sm">{user?.name}</p>
               <p className="text-xs text-gray-400 truncate">{user?.email?.split('@')[0]}</p>
-              <span className="inline-block px-1.5 py-0.5 bg-blue-600 text-[10px] rounded-full mt-1">HR Admin</span>
+              <span className="inline-block px-1.5 py-0.5 bg-blue-600 text-[10px] rounded-full mt-1">Admin</span>
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ const HRDashboard = ({ darkMode, setDarkMode }) => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Briefcase className="w-4 h-4 text-white" />
             </div>
-            <h2 className="text-sm font-bold text-gray-800 dark:text-white">HR Portal</h2>
+            <h2 className="text-sm font-bold text-gray-800 dark:text-white">Admin Dashboard</h2>
           </div>
           <button
             onClick={() => setSidebarOpen(true)}
