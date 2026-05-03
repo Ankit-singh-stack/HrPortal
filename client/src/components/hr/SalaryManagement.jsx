@@ -174,8 +174,8 @@ const SalaryManagement = () => {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: Math.round(Number(result.amount) * 100),
       currency: 'INR',
-      name: 'HR Management Portal',
-      description: `Salary for ${employeeName} — ${new Date(2000, salary.month).toLocaleString('default', { month: 'long' })} ${salary.year}`,
+      name: 'Payment Portal',
+      description: `Payment for ${employeeName} — ${new Date(2000, salary.month).toLocaleString('default', { month: 'long' })} ${salary.year}`,
       order_id: result.orderId,
       handler: async function (response) {
         try {
@@ -199,6 +199,8 @@ const SalaryManagement = () => {
       },
       theme: { color: '#4F46E5' }
     };
+    
+    console.log('💳 Opening Razorpay Checkout with options:', options);
 
     console.log('💳 Opening Razorpay Checkout for employee:', employeeName, 'Amount:', result.amount);
     const rzp = new window.Razorpay(options);

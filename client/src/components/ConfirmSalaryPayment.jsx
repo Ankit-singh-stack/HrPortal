@@ -103,7 +103,8 @@ const ConfirmSalaryPayment = ({ onPaymentSuccess }) => {
           color: '#3399cc'
         }
       };
-
+      
+      console.log('💳 Opening Razorpay Checkout with options:', options);
       console.log('💳 Opening Razorpay Checkout for salary:', salary._id, 'Order:', salary.paymentOrderId);
       const paymentObject = new window.Razorpay(options);
 
