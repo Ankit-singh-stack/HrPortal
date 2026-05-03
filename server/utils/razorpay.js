@@ -79,6 +79,19 @@ export const createOrder = async (amount, currency = 'INR', receipt) => {
   }
 };
 
+export const validateWebhookSignature = (body, signature, secret) => {
+  try {
+    return Razorpay.validateWebhookSignature(
+      JSON.stringify(body),
+      signature,
+      secret || process.env.RAZORPAY_WEBHOOK_SECRET
+    );
+  } catch (error) {
+    console.error('❌ Webhook signature validation error:', error.message);
+    return false;
+  }
+};
+
 export const verifyPaymentSignature = (razorpay_order_id, razorpay_payment_id, razorpay_signature) => {
   try {
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {

@@ -4,11 +4,15 @@ import {
   verifyPayment, 
   handlePaymentFailure, 
   getPaymentHistory, 
-  getPaymentDetails 
+  getPaymentDetails,
+  razorpayWebhook 
 } from '../controllers/paymentController.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Webhook route (No auth middleware, verified via signature)
+router.post('/webhook', razorpayWebhook);
 
 // Payment routes
 router.post('/create-order', protect, createPaymentOrder);

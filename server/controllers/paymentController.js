@@ -1,4 +1,5 @@
-import { createOrder, verifyPaymentSignature } from '../utils/razorpay.js';
+import { createOrder, verifyPaymentSignature, validateWebhookSignature } from '../utils/razorpay.js';
+import { Salary } from '../models/Salary.js';
 import { ActivityLog } from '../models/ActivityLog.js';
 import mongoose from 'mongoose';
 
@@ -182,5 +183,79 @@ export const getPaymentDetails = async (req, res) => {
     res.json(payment);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Razorpay Webhook Handler
+export const razorpayWebhook = async (req, res) => {
+  try {
+    const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const signature = req.headers['x-razorpay-signature'];
+
+    if (!signature) {
+      console.warn('⚠️ Webhook received without signature');
+      return res.status(400).json({ message: 'Missing signature' });
+    }
+
+    const isValid = validateWebhookSignature(req.body, signature, secret);
+
+    if (!isValid) {
+      console.error('❌ Invalid webhook signature');
+      return res.status(400).json({ message: 'Invalid signature' });
+    }
+
+    const { event, payload } = req.body;
+    console.log(`🔔 Razorpay Webhook received: ${event}`);
+
+    const payment = payload.payment?.entity;
+    if (!payment) {
+      return res.json({ status: 'ok', message: 'No payment entity found' });
+    }
+
+    const orderId = payment.order_id;
+    const paymentId = payment.id;
+
+    if (event === 'payment.captured' || event === 'payment.authorized') {
+      // 1. Update Generic Payment
+      const genericPayment = await Payment.findOne({ orderId });
+      if (genericPayment && genericPayment.status !== 'success') {
+        genericPayment.status = 'success';
+        genericPayment.paymentId = paymentId;
+        await genericPayment.save();
+        
+        await ActivityLog.create({
+          userId: genericPayment.userId,
+          action: 'PAYMENT_SUCCESS_WEBHOOK',
+          details: { orderId, paymentId, amount: genericPayment.amount }
+        });
+        console.log(`✅ Webhook: Updated generic payment ${orderId}`);
+      }
+
+      // 2. Update Salary Payment
+      const salary = await Salary.findOne({ paymentOrderId: orderId });
+      if (salary && salary.paymentStatus !== 'paid') {
+        salary.paymentStatus = 'paid';
+        salary.paymentId = paymentId;
+        salary.paymentDate = new Date();
+        salary.paymentApprovedAt = new Date();
+        await salary.save();
+
+        await ActivityLog.create({
+          userId: salary.userId,
+          action: 'SALARY_PAYMENT_SUCCESS_WEBHOOK',
+          details: { salaryId: salary._id, orderId, paymentId, amount: salary.netSalary }
+        });
+        console.log(`✅ Webhook: Updated salary payment ${orderId}`);
+      }
+    } else if (event === 'payment.failed') {
+      await Payment.findOneAndUpdate({ orderId }, { status: 'failed' });
+      await Salary.findOneAndUpdate({ paymentOrderId: orderId }, { paymentStatus: 'failed', failureReason: 'Payment failed via webhook' });
+      console.log(`❌ Webhook: Payment failed ${orderId}`);
+    }
+
+    res.json({ status: 'ok' });
+  } catch (error) {
+    console.error('❌ Webhook processing error:', error);
+    res.status(500).json({ message: 'Webhook processing failed' });
   }
 };
