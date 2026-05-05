@@ -879,11 +879,9 @@ const SalaryManagement = () => {
                   </span>
                 </label>
                 <p className="text-xs text-amber-200/90 leading-relaxed">
-                  <strong className="text-amber-100">Real money:</strong> use{' '}
-                  <code className="text-amber-100 bg-black/30 px-1 rounded">rzp_live_…</code> keys in both{' '}
-                  <code className="text-amber-100 bg-black/30 px-1 rounded">server/.env</code> and{' '}
-                  <code className="text-amber-100 bg-black/30 px-1 rounded">client/.env</code> (VITE_RAZORPAY_KEY_ID).
-                  Test keys (<code className="text-amber-100">rzp_test_</code>) always show demo UPI and no real debit.
+                  <strong className="text-emerald-400">Live mode active:</strong> using{' '}
+                  <code className="text-emerald-300 bg-black/30 px-1 rounded">rzp_live_…</code> keys.
+                  Real payments will be processed and money will be debited.
                 </p>
               </div>
               

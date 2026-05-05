@@ -8,7 +8,7 @@ dotenv.config();
 // Verify Razorpay keys are configured
 if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
   console.error('❌ RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing in .env file!');
-  console.error('Please configure your Razorpay TEST keys (rzp_test_*) for development');
+  console.error('Please configure your Razorpay keys (rzp_live_* for production or rzp_test_* for development) in the .env file');
 } else {
   console.log(`✅ Razorpay configured: Key ID starts with ${process.env.RAZORPAY_KEY_ID.substring(0, 12)}...`);
 }
