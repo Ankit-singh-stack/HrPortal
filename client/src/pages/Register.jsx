@@ -66,11 +66,17 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 py-12 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 py-12 px-4 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-10 dark:opacity-20 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-[120px]"></div>
+      </div>
+
+      <div className="bg-white dark:bg-slate-900 p-8 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-slate-100 dark:border-slate-800 relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
-          <p className="text-gray-600 mt-2">Join our Payment Portal</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Create Account</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Join our HR Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -85,8 +91,8 @@ const Register = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your full name"
+              className="input-field"
+              placeholder="John Doe"
             />
           </div>
 
@@ -101,8 +107,8 @@ const Register = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your email"
+              className="input-field"
+              placeholder="name@company.com"
             />
           </div>
 
@@ -117,8 +123,8 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Create a password"
+              className="input-field"
+              placeholder="••••••••"
             />
           </div>
 
@@ -133,8 +139,8 @@ const Register = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Confirm your password"
+              className="input-field"
+              placeholder="••••••••"
             />
           </div>
 
@@ -146,19 +152,19 @@ const Register = () => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="input-field"
             >
-              <option value="employee">User</option>
-              <option value="hr">Admin</option>
+              <option value="employee">Employee</option>
+              <option value="hr">HR Administrator</option>
             </select>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 disabled:opacity-50"
+            className="btn-primary w-full py-3"
           >
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? 'Creating Account...' : 'Register Account'}
           </button>
         </form>
 

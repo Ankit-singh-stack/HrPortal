@@ -111,11 +111,12 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
         <div className="p-4 border-b border-gray-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 flex-1">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Briefcase className="w-4 h-4" />
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/20">
+                <Briefcase className="w-4 h-4 text-white" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-sm font-bold truncate">User Dashboard</h1>
+                <h1 className="text-sm font-bold tracking-tight">Employee Portal</h1>
+                <p className="text-[10px] text-slate-400 font-medium">Internal Portal</p>
               </div>
             </div>
             <button
@@ -129,7 +130,7 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
         
         <div className="p-4 border-b border-gray-800">
           <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <div className="w-10 h-10 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 text-indigo-400">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -148,13 +149,13 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 text-sm ${
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
                   isActive 
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg' 
-                    : 'text-gray-300 hover:bg-gray-800'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' 
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                 }`}
               >
-                <item.icon className="w-4 h-4 flex-shrink-0" />
+                <item.icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-slate-500'}`} />
                 <span className="flex-1 truncate text-xs">{item.label}</span>
                 {isActive && (
                   <div className="w-1 h-1 bg-white rounded-full animate-pulse flex-shrink-0"></div>
@@ -184,14 +185,14 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
       </div>
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-black">
+      <div className="flex-1 flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0f172a]">
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 py-3">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
               <Briefcase className="w-4 h-4 text-white" />
             </div>
-            <h2 className="text-sm font-bold text-gray-800 dark:text-white">User Dashboard</h2>
+            <h2 className="text-sm font-bold text-slate-800 dark:text-white">Employee Portal</h2>
           </div>
           <button
             onClick={() => setSidebarOpen(true)}
@@ -206,41 +207,47 @@ const EmployeeDashboard = ({ darkMode, setDarkMode }) => {
             <Route path="/" element={
               <div className="p-3 sm:p-4 md:p-6">
                 <div className="mb-4 sm:mb-6">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white tracking-tight">
                     My Dashboard
                   </h2>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Welcome back, {user?.name}!</p>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Welcome back, {user?.name}!</p>
                 </div>
                 
                 {/* Stats Cards - Fully Responsive Grid */}
                 <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                  <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4">
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 transition-all duration-300 hover:shadow-md group">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">Attendance Rate</p>
-                        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">{stats.attendanceRate}%</p>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Attendance Rate</p>
+                        <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.attendanceRate}%</p>
                       </div>
-                      <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-500 opacity-50 flex-shrink-0" />
+                      <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center transition-colors group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30">
+                        <CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4">
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 transition-all duration-300 hover:shadow-md group">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">Pending Leaves</p>
-                        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">{stats.pendingLeaves}</p>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Pending Leaves</p>
+                        <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.pendingLeaves}</p>
                       </div>
-                      <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-500 opacity-50 flex-shrink-0" />
+                      <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center transition-colors group-hover:bg-amber-100 dark:group-hover:bg-amber-900/30">
+                        <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 xs:col-span-2 lg:col-span-1">
+                  <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 transition-all duration-300 hover:shadow-md group">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">Approved Leaves</p>
-                        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">{stats.approvedLeaves}</p>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Approved Leaves</p>
+                        <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.approvedLeaves}</p>
                       </div>
-                      <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 opacity-50 flex-shrink-0" />
+                      <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center transition-colors group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30">
+                        <TrendingUp className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                      </div>
                     </div>
                   </div>
                 </div>

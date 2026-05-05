@@ -322,88 +322,88 @@ const SalaryManagement = () => {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-screen">
+    <div className="p-8 bg-slate-50 dark:bg-slate-900 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Payment Management
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-white">
+              Salary Management
             </h2>
-            <p className="text-gray-400 mt-2">Manage and process payments for platform users</p>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">Manage employee salaries, allowances, and deductions</p>
           </div>
           <button
             onClick={() => {
               resetForm();
               setShowModal(true);
             }}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:shadow-lg transition-all duration-300"
+            className="btn-primary flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
-            + Initiate Payment
+            Create Salary Slip
           </button>
         </div>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-purple-900/30">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-all duration-300 hover:shadow-md">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Total Payments</p>
-                <p className="text-2xl font-bold text-purple-400">{formatCurrency(stats.summary.totalPayroll)}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Payroll</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{formatCurrency(stats.summary.totalPayroll)}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-900/30 rounded-full flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-purple-400" />
+              <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-blue-900/30">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-all duration-300 hover:shadow-md">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Average Transaction Value</p>
-                <p className="text-2xl font-bold text-blue-400">{formatCurrency(stats.summary.averageSalary)}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Average Transaction</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{formatCurrency(stats.summary.averageSalary)}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-blue-400" />
+              <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-green-900/30">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-all duration-300 hover:shadow-md">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Completed Payments</p>
-                <p className="text-2xl font-bold text-green-400">{stats.summary.paidCount}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Paid Slips</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.summary.paidCount}</p>
               </div>
-              <div className="w-12 h-12 bg-green-900/30 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-400" />
+              <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 border border-yellow-900/30">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-all duration-300 hover:shadow-md">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-gray-400 text-sm">Pending Payments</p>
-                <p className="text-2xl font-bold text-yellow-400">{stats.summary.pendingCount}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Pending Slips</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.summary.pendingCount}</p>
               </div>
-              <div className="w-12 h-12 bg-yellow-900/30 rounded-full flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-400" />
+              <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center">
+                <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Filter Bar */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl p-6 mb-6 border border-gray-700">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-6 mb-6 border border-slate-200 dark:border-slate-700">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Select Month</label>
+              <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Month</label>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600 focus:ring-2 focus:ring-blue-500"
+                className="input-field"
               >
                 {Array.from({ length: 12 }, (_, i) => (
                   <option key={i} value={i}>{new Date(2000, i).toLocaleString('default', { month: 'long' })}</option>
@@ -411,46 +411,45 @@ const SalaryManagement = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Select Year</label>
+              <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Year</label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="w-full px-4 py-2 bg-gray-700 text-white rounded-xl border border-gray-600 focus:ring-2 focus:ring-blue-500"
+                className="input-field"
               >
                 {[2023, 2024, 2025, 2026].map(year => (
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">&nbsp;</label>
+            <div className="flex items-end">
               <button
                 onClick={fetchSalaries}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                className="btn-primary w-full flex items-center justify-center gap-2"
               >
-                <Search className="w-5 h-5" />
-                Search Transactions
+                <Search className="w-4 h-4" />
+                Filter Records
               </button>
             </div>
           </div>
         </div>
 
         {/* Salary Table */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm overflow-hidden border border-slate-200 dark:border-slate-700">
           <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead className="bg-gradient-to-r from-gray-700 to-gray-800">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead className="bg-slate-50 dark:bg-slate-900/50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">User</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Base Amount</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Additional Amount</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Adjustments</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Final Amount</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Payment Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Employee</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Base Salary</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Allowances</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Deductions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Net Amount</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                 {loading ? (
                   <tr>
                     <td colSpan="7" className="text-center py-12">
@@ -469,27 +468,32 @@ const SalaryManagement = () => {
                     const totalDeductions = Object.values(salary.deductions).reduce((sum, val) => sum + (val || 0), 0);
                     
                     return (
-                      <tr key={salary._id} className="hover:bg-gray-700/30 transition-colors duration-200">
+                      <tr key={salary._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
                         <td className="px-6 py-4">
-                          <div>
-                            <p className="font-medium text-white">{salary.userId?.name}</p>
-                            <p className="text-xs text-gray-400">{salary.userId?.profile?.designation || 'User'}</p>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center text-indigo-700 dark:text-indigo-300 text-xs font-bold">
+                              {salary.userId?.name?.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900 dark:text-white text-sm">{salary.userId?.name}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">{salary.userId?.profile?.designation || 'Staff'}</p>
+                            </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-white">{formatCurrency(salary.basicSalary)}</td>
-                        <td className="px-6 py-4 text-green-400">{formatCurrency(totalAllowances)}</td>
-                        <td className="px-6 py-4 text-red-400">{formatCurrency(totalDeductions)}</td>
-                        <td className="px-6 py-4 text-blue-400 font-bold">{formatCurrency(salary.netSalary)}</td>
+                        <td className="px-6 py-4 text-slate-700 dark:text-slate-300 text-sm font-medium">{formatCurrency(salary.basicSalary)}</td>
+                        <td className="px-6 py-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium">+{formatCurrency(totalAllowances)}</td>
+                        <td className="px-6 py-4 text-rose-600 dark:text-rose-400 text-sm font-medium">-{formatCurrency(totalDeductions)}</td>
+                        <td className="px-6 py-4 text-indigo-600 dark:text-indigo-400 font-bold text-sm">{formatCurrency(salary.netSalary)}</td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            salary.paymentStatus === 'paid' ? 'bg-green-900/50 text-green-400' :
-                            salary.paymentStatus === 'processed' ? 'bg-yellow-900/50 text-yellow-400' :
-                            'bg-gray-700 text-gray-400'
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            salary.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                            salary.paymentStatus === 'processed' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' :
+                            'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                           }`}>
-                            {salary.paymentStatus === 'processed' ? 'Completed' : 
+                            {salary.paymentStatus === 'processed' ? 'Processed' : 
                              salary.paymentStatus === 'payment_initiated' ? 'Initiated' :
-                             salary.paymentStatus === 'paid' ? 'Successful' :
-                             salary.paymentStatus.toUpperCase()}
+                             salary.paymentStatus === 'paid' ? 'Paid' :
+                             salary.paymentStatus}
                           </span>
                         </td>
                         <td className="px-6 py-4">
@@ -879,9 +883,11 @@ const SalaryManagement = () => {
                   </span>
                 </label>
                 <p className="text-xs text-amber-200/90 leading-relaxed">
-                  <strong className="text-emerald-400">Live mode active:</strong> using{' '}
-                  <code className="text-emerald-300 bg-black/30 px-1 rounded">rzp_live_…</code> keys.
-                  Real payments will be processed and money will be debited.
+                  <strong className="text-amber-100">Real money:</strong> use{' '}
+                  <code className="text-amber-100 bg-black/30 px-1 rounded">rzp_live_…</code> keys in both{' '}
+                  <code className="text-amber-100 bg-black/30 px-1 rounded">server/.env</code> and{' '}
+                  <code className="text-amber-100 bg-black/30 px-1 rounded">client/.env</code> (VITE_RAZORPAY_KEY_ID).
+                  Test keys (<code className="text-amber-100">rzp_test_</code>) always show demo UPI and no real debit.
                 </p>
               </div>
               
