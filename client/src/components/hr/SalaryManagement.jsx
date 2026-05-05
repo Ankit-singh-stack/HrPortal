@@ -862,55 +862,29 @@ const SalaryManagement = () => {
                 />
               </div>
 
-              <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-4 space-y-3">
+              <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6 border border-slate-200 dark:border-slate-800">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-white">Net Salary:</span>
-                  <span className="text-2xl font-bold text-blue-400">{formatCurrency(calculateNetSalary())}</span>
+                  <span className="text-lg font-semibold text-slate-700 dark:text-slate-300">Net Salary:</span>
+                  <span className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{formatCurrency(calculateNetSalary())}</span>
                 </div>
-                <label className="flex items-start gap-3 cursor-pointer text-sm text-gray-200">
-                  <input
-                    type="checkbox"
-                    className="mt-1 rounded border-gray-500"
-                    checked={payNowWithRazorpay}
-                    onChange={(e) => setPayNowWithRazorpay(e.target.checked)}
-                  />
-                  <span>
-                    <span className="font-medium text-white">Pay now with Razorpay</span>
-                    <span className="block text-xs text-gray-400 mt-1">
-                      After saving: sends salary to the employee&apos;s bank if RazorpayX is configured on the server;
-                      otherwise opens Checkout for UPI, cards, or netbanking (money settles in your Razorpay balance).
-                    </span>
-                  </span>
-                </label>
-                <p className="text-xs text-amber-200/90 leading-relaxed">
-                  <strong className="text-amber-100">Real money:</strong> use{' '}
-                  <code className="text-amber-100 bg-black/30 px-1 rounded">rzp_live_…</code> keys in both{' '}
-                  <code className="text-amber-100 bg-black/30 px-1 rounded">server/.env</code> and{' '}
-                  <code className="text-amber-100 bg-black/30 px-1 rounded">client/.env</code> (VITE_RAZORPAY_KEY_ID).
-                  Test keys (<code className="text-amber-100">rzp_test_</code>) always show demo UPI and no real debit.
-                </p>
               </div>
               
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-3 mt-8">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold"
+                  className="btn-primary flex-1 py-4 text-lg"
                 >
                   {loading
-                    ? 'Working...'
-                    : payNowWithRazorpay
-                      ? editingSalary
-                        ? 'Update & pay'
-                        : 'Process salary & pay'
-                      : editingSalary
-                        ? 'Update salary'
-                        : 'Save salary only'}
+                    ? 'Processing...'
+                    : editingSalary
+                      ? 'Update & Pay'
+                      : 'Process & Pay'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 bg-gray-700 text-gray-300 py-3 rounded-xl hover:bg-gray-600 transition-all duration-300"
+                  className="btn-secondary flex-1 py-4 text-lg"
                 >
                   Cancel
                 </button>
