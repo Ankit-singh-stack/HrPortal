@@ -19,3 +19,5 @@ services:
         generateValue: true
       - key: CLIENT_URL
         value: https://hrportal-client.onrender.com
+      - key: MONGO_URI
+        sync: false
