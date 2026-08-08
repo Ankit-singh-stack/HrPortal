@@ -43,11 +43,11 @@ if (!fs.existsSync(uploadsDir)) {
 // ========== DATABASE CONNECTION ==========
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI;
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
     
     if (!mongoUri) {
-      console.error('❌ MONGO_URI is not defined in environment variables!');
-      throw new Error('MONGO_URI missing');
+      console.error('❌ MONGODB_URI is not defined in environment variables!');
+      throw new Error('MONGODB_URI missing');
     }
 
     console.log(`⏳ Connecting to MongoDB... (URI length: ${mongoUri.length})`);
