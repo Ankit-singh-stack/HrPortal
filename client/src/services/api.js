@@ -17,7 +17,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000,
+  timeout: isProd ? 90000 : 30000,
 });
 
 // Add token to requests
@@ -49,9 +49,13 @@ api.interceptors.response.use(
     console.error(`❌ API Error [${status || 'NETWORK'}]:`, message);
     
     if (status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      const path = window.location.pathname;
+      const onAuthPage = path === '/login' || path === '/register' || path === '/';
+      if (!onAuthPage) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

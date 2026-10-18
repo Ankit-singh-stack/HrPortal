@@ -44,7 +44,6 @@ const Register = () => {
       }
     } catch (error) {
       console.error('Registration failed:', error);
-      alert(error.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
